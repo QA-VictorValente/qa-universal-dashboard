@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results total="4" passed="3" failed="1" skipped="0">
+  <suite name="Selenium Webdriver Enterprise Suite">
+    <test name="Manufatura e Faturamento">
+      <class name="com.izzyway.tests.ManufaturaTest">
+        <test-method status="PASS" name="deveCriarOrdemProducaoComInsumosReceitados" duration-ms="18400"/>
+        <test-method status="PASS" name="validarApontamentoDeHorasDeOperador" duration-ms="12300"/>
+      </class>
+      <class name="com.izzyway.tests.FaturamentoTest">
+        <test-method status="PASS" name="gerarLoteFaturamentoMultiplasNotas" duration-ms="24000"/>
+        <test-method status="FAIL" name="validarEnvioXmlParaEmailContabilidade" duration-ms="30000">
+          <exception class="org.openqa.selenium.TimeoutException">
+            <message>Expected condition failed: waiting for visibility of element located by By.id: modal-email-confirm (tried for 20 second(s))</message>
+            <full-stacktrace>org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.id: modal-email-confirm (tried for 20 second(s))
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at com.izzyway.tests.FaturamentoTest.validarEnvioXmlParaEmailContabilidade(FaturamentoTest.java:118)
+            </full-stacktrace>
+          </exception>
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

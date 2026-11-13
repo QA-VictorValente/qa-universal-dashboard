@@ -1,0 +1,65 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 3,
+    "passes": 2,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-13T18:29:51.000Z",
+    "end": "2026-11-13T18:30:45.000Z",
+    "duration": 54000
+  },
+  "results": [
+    {
+      "uuid": "cypress-suite-01",
+      "title": "E2E Checkout & Autenticacao",
+      "suites": [
+        {
+          "uuid": "sub-suite-01",
+          "title": "Fluxo de Login",
+          "tests": [
+            {
+              "title": "Deve autenticar com usuario admin e carregar dashboard",
+              "fullTitle": "Fluxo de Login Deve autenticar com usuario admin e carregar dashboard",
+              "duration": 2840,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false
+            },
+            {
+              "title": "Deve exibir mensagem amigavel ao informar senha incorreta",
+              "fullTitle": "Fluxo de Login Deve exibir mensagem amigavel ao informar senha incorreta",
+              "duration": 1420,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false
+            }
+          ]
+        },
+        {
+          "uuid": "sub-suite-02",
+          "title": "Carrinho de Compras",
+          "tests": [
+            {
+              "title": "Deve aplicar cupom de desconto de 15% na finalizacao",
+              "fullTitle": "Carrinho de Compras Deve aplicar cupom de desconto de 15% na finalizacao",
+              "duration": 15200,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "err": {
+                "message": "Timed out retrying after 10000ms: Expected to find element: `[data-testid=\"discount-applied-badge\"]`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `[data-testid=\"discount-applied-badge\"]`, but never found it.\n    at Context.eval (cypress/e2e/checkout/cupom.cy.js:42:7)"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.0 (Python 3.11.4 on win32)" generated="20261113 18:29:51.102">
+  <suite id="s1" name="IzzyWay ERP Regression Suite">
+    <suite id="s1-s1" name="PDV Frente de Caixa">
+      <test id="s1-s1-t1" name="Abrir Caixa Operador Com Fundo De Troco">
+        <kw name="Dado que estou logado no PDV">
+          <status status="PASS" starttime="20261113 18:29:52.000" endtime="20261113 18:29:54.120"/>
+        </kw>
+        <kw name="Quando informo o fundo de troco R$ 150,00">
+          <status status="PASS" starttime="20261113 18:29:54.120" endtime="20261113 18:29:56.300"/>
+        </kw>
+        <status status="PASS" starttime="20261113 18:29:52.000" endtime="20261113 18:29:56.500"/>
+      </test>
+      <test id="s1-s1-t2" name="Finalizar Venda Rapida Com Cartao TEF">
+        <kw name="Inserir Produto Codigo De Barras 7891000">
+          <status status="PASS" starttime="20261113 18:29:56.600" endtime="20261113 18:29:58.200"/>
+        </kw>
+        <kw name="Acionar Integracao TEF Dial">
+          <msg level="FAIL">Timeout 15s aguardando resposta do Pinpad TEF</msg>
+          <status status="FAIL" starttime="20261113 18:29:58.200" endtime="20261113 18:30:13.200"/>
+        </kw>
+        <status status="FAIL" starttime="20261113 18:29:56.600" endtime="20261113 18:30:13.500"/>
+      </test>
+    </suite>
+    <suite id="s1-s2" name="Fiscal e Tributacao">
+      <test id="s1-s2-t1" name="Emitir NFC-e em Contingencia Offline">
+        <kw name="Simular Queda SEFAZ">
+          <status status="PASS" starttime="20261113 18:30:14.000" endtime="20261113 18:30:15.500"/>
+        </kw>
+        <kw name="Gerar XML Assinado em Contingencia">
+          <status status="PASS" starttime="20261113 18:30:15.500" endtime="20261113 18:30:18.200"/>
+        </kw>
+        <status status="PASS" starttime="20261113 18:30:14.000" endtime="20261113 18:30:18.500"/>
+      </test>
+    </suite>
+  </suite>
+  <statistics>
+    <total>
+      <stat pass="2" fail="1" skip="0">All Tests</stat>
+    </total>
+  </statistics>
+  <errors>
+  </errors>
+</robot>

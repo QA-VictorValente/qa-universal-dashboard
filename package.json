@@ -1,0 +1,41 @@
+{
+  "name": "qa-universal-dashboard",
+  "version": "1.0.0",
+  "description": "Executive & Cinematic Test Dashboard for Playwright, Cypress, Robot Framework, Selenium, Pytest & JUnit with WebGL Tactical Radar and AI Triage",
+  "main": "bin/cli.js",
+  "bin": {
+    "qa-dashboard": "./bin/cli.js",
+    "qa-universal-dashboard": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js --open",
+    "dev": "node bin/cli.js --watch --open",
+    "build": "node bin/cli.js --build --output ./dist/index.html",
+    "demo": "node bin/cli.js --demo --open",
+    "demo:playwright": "node bin/cli.js --results ./demo-reports/playwright/results.json --open",
+    "demo:cypress": "node bin/cli.js --results ./demo-reports/cypress/mochawesome.json --open",
+    "demo:robot": "node bin/cli.js --results ./demo-reports/robot/output.xml --open",
+    "demo:selenium": "node bin/cli.js --results ./demo-reports/selenium/testng-results.xml --open"
+  },
+  "keywords": [
+    "qa",
+    "dashboard",
+    "testing",
+    "playwright",
+    "cypress",
+    "robotframework",
+    "selenium",
+    "pytest",
+    "junit",
+    "test-reporting",
+    "allure-alternative",
+    "quality-assurance",
+    "telemetry",
+    "ai-triage",
+    "ci-cd"
+  ],
+  "author": "Victor QA Engineering",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

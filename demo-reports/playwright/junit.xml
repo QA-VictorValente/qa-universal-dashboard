@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites name="Playwright Tests" tests="134" failures="25" skipped="0" errors="0" time="2479.2">
+  <!-- Módulo Financeiro -->
+  <testsuite name="Financeiro" tests="20" failures="0" skipped="0" time="380.5">
+    <testcase classname="Tests.Financeiro.FluxoCaixaTest" name="DeveCalcularSaldoConsolidadoDiarioComSucesso" time="18.2"/>
+    <testcase classname="Tests.Financeiro.ContasReceberTest" name="DeveBaixarTituloComAcrescimoEJuros" time="19.4"/>
+    <testcase classname="Tests.Financeiro.ContasPagarTest" name="ValidarAgendamentoBancarioComArquivoRemessa" time="22.1"/>
+    <testcase classname="Tests.Financeiro.ConciliacaoTest" name="ImportarExtratoOfxSemDivergencias" time="15.8"/>
+    <testcase classname="Tests.Financeiro.DRETest" name="GerarDemonstrativoResultadoExercicioMensal" time="24.0"/>
+    <testcase classname="Tests.Financeiro.BoletoTest" name="EmitirBoletoComQrcodePixHibrido" time="16.5"/>
+  </testsuite>
+
+  <!-- Módulo Estoque -->
+  <testsuite name="Estoque" tests="16" failures="0" skipped="0" time="310.2">
+    <testcase classname="Tests.Estoque.InventarioTest" name="RegistrarContagemFisicaComAjusteAutomatico" time="19.8"/>
+    <testcase classname="Tests.Estoque.TransferenciaTest" name="TransferirEntreLojasComRastreioDeLote" time="21.3"/>
+    <testcase classname="Tests.Estoque.CurvaABCTest" name="CalcularCurvaAbcProdutosMaisVendidos" time="17.6"/>
+  </testsuite>
+
+  <!-- Módulo API -->
+  <testsuite name="API" tests="23" failures="0" skipped="0" time="145.8">
+    <testcase classname="Tests.API.AuthEndpointTest" name="POST /api/v1/auth/token - DeveRetornarJwtValido" time="0.45"/>
+    <testcase classname="Tests.API.PedidosEndpointTest" name="POST /api/v1/pedidos - CriarPedidoCompletoComPayloadJson" time="0.82"/>
+    <testcase classname="Tests.API.FiscalEndpointTest" name="POST /api/v1/nfe/status - RetornarStatusSefazAutorizada" time="1.12"/>
+  </testsuite>
+
+  <!-- Módulo Movimentação -->
+  <testsuite name="Movimentação" tests="22" failures="0" skipped="0" time="412.0">
+    <testcase classname="Tests.Movimentacao.EntradaNotaTest" name="ImportarXmlNfeComRateioDeCustos" time="28.4"/>
+    <testcase classname="Tests.Movimentacao.PromocaoTest" name="ClonarPromocaoCopiandoItensEModalidades" time="14.2"/>
+  </testsuite>
+
+  <!-- Módulo VaiDeFood (Regressão / Crítico) -->
+  <testsuite name="VaiDeFood" tests="34" failures="23" skipped="0" time="740.1">
+    <testcase classname="Tests.VaiDeFood.CheckoutTest" name="FazerPedidoCompletoComPagamentoPixOnlineMobile" time="19.0">
+      <failure message="Timeout 15000ms exceeded waiting for locator GetByRole(AriaRole.Row, new() { Name = 'Pix' })">
+System.TimeoutException : Timeout 15000ms exceeded.
+Call log:
+  - waiting for GetByRole(AriaRole.Row, new() { Name = "Pix" })
+  - locator resolved to &lt;div class="checkout-method-row skeleton-loading"&gt;...&lt;/div&gt;
+  - attempting click action
+  - waiting for element to be visible, enabled and stable
+  - element was not visible within 15000ms
+   at Microsoft.Playwright.Core.Locator.ClickAsync(LocatorClickOptions options) in /src/Playwright/Core/Locator.cs:line 162
+   at Tests.TestAutomated.Page.Web.VaiDeFood.PedidoPage.FazerPedidoCompletoComPagamentoPixOnlineMobile() in Tests\TestAutomated\Page\Web\VaiDeFood\PedidoPage.cs:line 162
+      </failure>
+    </testcase>
+    <testcase classname="Tests.VaiDeFood.CheckoutTest" name="NaoDevePermitirCancelamentoSemJustificativa" time="18.2">
+      <failure message="Expected status 'Cancelamento Negado' but got 'Processando'">
+NUnit.Framework.AssertionException : Expected: String containing "Cancelamento Negado"
+But was: "Processando"
+   at Tests.TestAutomated.Page.Web.VaiDeFood.PedidoPage.ValidarCancelamento() in Tests\TestAutomated\Page\Web\VaiDeFood\PedidoPage.cs:line 204
+      </failure>
+    </testcase>
+    <testcase classname="Tests.VaiDeFood.CheckoutTest" name="ValidarTimeoutAoGerarChavePixDuplicada" time="22.4">
+      <failure message="SocketException: Gateway SEFAZ / PSP timeout">
+System.Net.Sockets.SocketException : Connection timed out after 20000ms waiting for PSP Pix confirmation.
+   at Tests.TestAutomated.Page.Web.VaiDeFood.PedidoPage.AguardarConfirmacaoPix() in Tests\TestAutomated\Page\Web\VaiDeFood\PedidoPage.cs:line 289
+      </failure>
+    </testcase>
+  </testsuite>
+
+  <!-- Módulo Produto (Atenção) -->
+  <testsuite name="Produto" tests="6" failures="2" skipped="0" time="160.0">
+    <testcase classname="Tests.Produto.CadastroTest" name="NaoDeveSalvarSemPreencherTributacaoFiscal" time="29.0">
+      <failure message="Timeout 15000ms exceeded waiting for input locator '#ncm-code'">
+System.TimeoutException : Element '#ncm-code' not interactable within 15000ms.
+   at Tests.Produto.CadastroPage.PreencherTributacao() in Tests\Produto\CadastroPage.cs:line 95
+      </failure>
+    </testcase>
+    <testcase classname="Tests.Produto.CadastroTest" name="NaoDeveSalvarQuandoNomeNaoForInformado" time="27.9">
+      <failure message="Timeout 15000ms exceeded waiting for error message badge">
+System.TimeoutException : Validation tooltip was not rendered within 15000ms.
+   at Tests.Produto.CadastroPage.ValidarTooltip() in Tests\Produto\CadastroPage.cs:line 112
+      </failure>
+    </testcase>
+    <testcase classname="Tests.Produto.CadastroTest" name="DeveCadastrarGradeTamanhosECores" time="25.1"/>
+    <testcase classname="Tests.Produto.CadastroTest" name="ValidarRegraDePrecoPromocionalPorHorario" time="22.4"/>
+  </testsuite>
+</testsuites>
