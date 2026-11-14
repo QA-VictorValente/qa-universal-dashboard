@@ -17,30 +17,30 @@ window.universalQaState = {
 // Dados de Demonstração Padrão de Alta Fidelidade (IzzyWay ERP / E-commerce Suite)
 const DEFAULT_DEMO_DATA = {
   summary: {
-    total: 134,
-    passed: 107,
-    failed: 25,
-    skipped: 2,
-    flaky: 3,
-    passRate: 79.9,
-    durationMs: 2479000,
-    durationFormatted: '41m 19s',
-    timestamp: '13/11/2026 • 19:30:00',
+    total: 136,
+    passed: 109,
+    failed: 27,
+    skipped: 0,
+    flaky: 2,
+    passRate: 80.1,
+    durationMs: 2601000,
+    durationFormatted: '43m 21s',
+    timestamp: '20/10/2026 • 09:01:39',
     framework: 'Playwright C# .NET 8 / Universal',
     environment: 'Staging Enterprise • Headless Chromium',
     slaPassed: true,
     slaTarget: 75.0
   },
   modules: [
+    { name: 'VaiDeFood', total: 34, passed: 11, failed: 23, passRate: 32.4, status: 'critical' },
+    { name: 'Produto', total: 6, passed: 2, failed: 4, passRate: 33.3, status: 'attention' },
     { name: 'Financeiro', total: 20, passed: 20, failed: 0, passRate: 100, status: 'conform' },
-    { name: 'Configuração', total: 4, passed: 4, failed: 0, passRate: 100, status: 'conform' },
-    { name: 'Estoque', total: 16, passed: 16, failed: 0, passRate: 100, status: 'conform' },
-    { name: 'Administrativo', total: 9, passed: 9, failed: 0, passRate: 100, status: 'conform' },
     { name: 'Movimentação', total: 22, passed: 22, failed: 0, passRate: 100, status: 'conform' },
     { name: 'API', total: 23, passed: 23, failed: 0, passRate: 100, status: 'conform' },
-    { name: 'VaiDeFood', total: 34, passed: 11, failed: 23, passRate: 32, status: 'critical' },
-    { name: 'Produto', total: 6, passed: 2, failed: 4, passRate: 33, status: 'attention' },
-    { name: 'Manufatura', total: 2, passed: 2, failed: 0, passRate: 100, status: 'conform' }
+    { name: 'Estoque', total: 16, passed: 16, failed: 0, passRate: 100, status: 'conform' },
+    { name: 'Administrativo', total: 7, passed: 7, failed: 0, passRate: 100, status: 'conform' },
+    { name: 'Configuração', total: 4, passed: 4, failed: 0, passRate: 100, status: 'conform' },
+    { name: 'Manufatura', total: 4, passed: 4, failed: 0, passRate: 100, status: 'conform' }
   ],
   tests: [
     {
@@ -1083,6 +1083,54 @@ function closeDrawer() {
   const backdrop = document.getElementById('drawer-backdrop');
   if (drawer) drawer.classList.add('translate-x-full');
   if (backdrop) backdrop.classList.add('hidden');
+}
+
+// Histórico de Execuções Persistido (Tendências & Matriz de Risco)
+const RUN_HISTORY_DATA = [
+  {
+    executionDate: "20/10/2026 09:01:39",
+    status: "Atual",
+    duration: "43m 21s",
+    total: 136,
+    passed: 109,
+    failed: 27,
+    passRate: 80.1,
+    classification: "Estável (80.1%)",
+    engine: "Microsoft Playwright C# (x64)"
+  },
+  {
+    executionDate: "19/10/2026 16:53:16",
+    status: "Anterior",
+    duration: "40m 26s",
+    total: 136,
+    passed: 108,
+    failed: 28,
+    passRate: 79.4,
+    classification: "Instável (79.4%)",
+    engine: "Microsoft Playwright C# (x64)"
+  },
+  {
+    executionDate: "16/10/2026 15:20:00",
+    status: "Histórico",
+    duration: "38m 12s",
+    total: 128,
+    passed: 97,
+    failed: 31,
+    passRate: 75.8,
+    classification: "Instável (75.8%)",
+    engine: "Microsoft Playwright C# (x64)"
+  }
+];
+
+function exportHistoryJson() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(RUN_HISTORY_DATA, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "history.json");
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+  showToast('Histórico exportado com sucesso (history.json)!');
 }
 
 // Helpers

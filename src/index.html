@@ -78,7 +78,7 @@
           <div class="hidden xl:flex items-center gap-2">
             <div class="flex items-center gap-1.5 px-3 py-1 rounded bg-[#16171b] text-gray-400 text-xs border border-[#26282e]">
               <span class="material-symbols-outlined text-[15px]">schedule</span>
-              <span id="current-timestamp">13/11/2026 • 19:30:00</span>
+              <span id="current-timestamp">20/10/2026 • 09:01:39</span>
             </div>
             <div class="flex items-center gap-1.5 px-3 py-1 rounded bg-[#16171b] text-gray-400 text-xs border border-[#26282e]">
               <span class="material-symbols-outlined text-[15px]">code</span>
@@ -89,7 +89,7 @@
                 <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-[#991b1b] opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-[#b91c1c]"></span>
               </span>
-              <span id="header-fail-badge" class="font-medium tracking-wide">25 Falhas Detectadas</span>
+              <span id="header-fail-badge" class="font-medium tracking-wide">27 Falhas Detectadas</span>
             </div>
           </div>
 
@@ -127,11 +127,11 @@
           </a>
           <a href="#" onclick="switchView('execucoes-e-resultados'); return false;" data-path="execucoes-e-resultados" class="text-gray-400 hover:text-white py-2 text-xs uppercase tracking-wider whitespace-nowrap transition-colors flex items-center gap-1.5">
             <span>Execuções e Resultados</span>
-            <span class="px-1.5 py-0.2 rounded-full bg-[#18191e] border border-[#282a30] text-[10px]">134</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-[#18191e] border border-[#282a30] text-[10px]">136</span>
           </a>
           <a href="#" onclick="switchView('testes-com-falha'); return false;" data-path="testes-com-falha" class="text-gray-400 hover:text-[#fca5a5] py-2 text-xs uppercase tracking-wider whitespace-nowrap transition-colors flex items-center gap-1.5">
             <span>Testes com Falha & IA</span>
-            <span class="px-1.5 py-0.2 rounded-full bg-[#450a0a]/50 border border-[#7f1d1d]/60 text-[#fca5a5] text-[10px]">25</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-[#450a0a]/50 border border-[#7f1d1d]/60 text-[#fca5a5] text-[10px]">27</span>
           </a>
           <a href="#" onclick="switchView('evidencias-e-player-webm'); return false;" data-path="evidencias-e-player-webm" class="text-gray-400 hover:text-white py-2 text-xs uppercase tracking-wider whitespace-nowrap transition-colors">
             Evidências & Player WebM
@@ -680,42 +680,536 @@
       <!-- VIEW 6: TENDÊNCIAS & MATRIZ DE RISCO       -->
       <!-- ========================================== -->
       <section id="view-tendencias-e-matriz-de-risco" class="view-panel hidden flex flex-col gap-6">
-        <div class="card-executive p-6 rounded-xl flex flex-col gap-6">
-          <div class="flex items-center justify-between border-b border-[#23252b] pb-4">
+
+        <!-- Linha Superior: Evolução entre Rodadas & Volume Aprovados vs Falhas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- Card 1: Evolução entre Rodadas de Testes -->
+          <div class="card-executive p-6 rounded-xl flex flex-col justify-between border border-[#23252b] bg-[#141519]/90">
             <div>
-              <h2 class="text-lg font-bold text-white tracking-tight">Matriz de Risco & Histórico de Regressão</h2>
-              <p class="text-xs text-gray-400">Mapeamento de impacto operacional para decisões de Go / No-Go de deploys.</p>
+              <div class="flex items-center justify-between border-b border-[#23252b] pb-4">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px] text-blue-400">trending_up</span>
+                    <h2 class="text-base font-bold text-white tracking-tight">Evolução entre Rodadas de Testes</h2>
+                  </div>
+                  <p class="text-xs text-gray-400 mt-1">Comparativo real contra a rodada imediatamente anterior (19/10/2026 16:53:16)</p>
+                </div>
+                <span class="px-2.5 py-1 rounded text-[10px] font-mono font-bold tracking-wider uppercase bg-[#1e2025] text-gray-300 border border-[#2d3038]">
+                  DELTA RUN
+                </span>
+              </div>
+
+              <!-- Lista de Métricas Delta -->
+              <div class="flex flex-col gap-4 py-5">
+                <!-- Taxa de Aprovação -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    <span class="text-xs font-medium text-gray-300">Taxa de Aprovação</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="font-mono text-xs text-gray-400">79.4% → <strong class="text-white font-semibold">80.1%</strong></span>
+                    <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 font-mono text-xs font-semibold flex items-center gap-0.5">
+                      <span class="material-symbols-outlined text-[13px]">arrow_upward</span> +0.7%
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Testes Aprovados -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    <span class="text-xs font-medium text-gray-300">Testes Aprovados</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="font-mono text-xs text-gray-400">108 → <strong class="text-white font-semibold">109</strong></span>
+                    <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 font-mono text-xs font-semibold">
+                      +1 aprovado
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Testes com Falha -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    <span class="text-xs font-medium text-gray-300">Testes com Falha</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="font-mono text-xs text-gray-400">28 → <strong class="text-white font-semibold">27</strong></span>
+                    <span class="px-2 py-0.5 rounded bg-red-950/70 border border-red-800/60 text-red-400 font-mono text-xs font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">trending_down</span> -1 falha
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Total da Suíte Coberta -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    <span class="text-xs font-medium text-gray-300">Total da Suíte Coberta</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="font-mono text-xs text-gray-400">136 → <strong class="text-white font-semibold">136</strong></span>
+                    <span class="px-2 py-0.5 rounded bg-[#1e2025] border border-[#2d3038] text-gray-400 font-mono text-xs">
+                      0 testes
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span class="px-2.5 py-1 rounded bg-yellow-950/60 text-yellow-400 border border-yellow-800/60 text-xs font-semibold">Risco Moderado</span>
+
+            <!-- Rodapé Card 1 -->
+            <div class="pt-4 border-t border-[#23252b] flex items-center justify-between text-xs">
+              <span class="font-mono text-gray-500">Engine: Microsoft Playwright C# (x64)</span>
+              <span class="text-blue-400 font-medium flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                Convergência Positiva
+              </span>
+            </div>
           </div>
 
-          <!-- Heatmap de Módulos -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div class="p-4 rounded-xl bg-[#18191e] border border-red-900/40 flex flex-col gap-2">
-              <div class="flex justify-between items-center">
-                <span class="font-bold text-white text-sm">VaiDeFood</span>
-                <span class="px-1.5 py-0.5 rounded bg-red-900/60 text-red-400 text-[10px] uppercase font-bold">Alto Risco</span>
+          <!-- Card 2: Volume de Aprovados vs Falhas -->
+          <div class="card-executive p-6 rounded-xl flex flex-col justify-between border border-[#23252b] bg-[#141519]/90">
+            <div>
+              <div class="flex items-center justify-between border-b border-[#23252b] pb-4">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px] text-blue-400">stacked_bar_chart</span>
+                    <h2 class="text-base font-bold text-white tracking-tight">Volume de Aprovados vs Falhas</h2>
+                  </div>
+                  <p class="text-xs text-gray-400 mt-1">Comparativo visual da suíte nas duas últimas rodadas sequenciais</p>
+                </div>
+                <span class="px-2.5 py-1 rounded text-[10px] font-mono font-bold tracking-wider uppercase bg-[#1e2025] text-gray-300 border border-[#2d3038]">
+                  PROPORCIONAL
+                </span>
               </div>
-              <p class="text-xs text-gray-400">23 falhas em checkout online. Bloqueador para release mobile.</p>
+
+              <!-- Barras Comparativas -->
+              <div class="flex flex-col gap-5 py-4">
+                <!-- Rodada Anterior -->
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-400 font-medium">Rodada Anterior (136 testes) • 19/10/2026 16:53:16</span>
+                    <span class="font-mono text-gray-300 font-medium">108 ok • 28 falhas (79.4%)</span>
+                  </div>
+                  <div class="w-full h-3 rounded-full bg-[#1e2025] overflow-hidden flex">
+                    <div class="h-full bg-blue-500 progress-fill" style="width: 79.4%;"></div>
+                    <div class="h-full bg-[#b91c1c] progress-fill" style="width: 20.6%;"></div>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-gray-400 flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Aprovados (108)
+                    </span>
+                    <span class="text-red-400 flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#b91c1c]"></span> Falhas Críticas (28)
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Rodada Atual -->
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-200 font-medium">Rodada Atual (136 testes) • 20/10/2026 09:01:39</span>
+                    <span class="font-mono text-gray-200 font-semibold">109 ok • 27 falhas (80.1%)</span>
+                  </div>
+                  <div class="w-full h-3 rounded-full bg-[#1e2025] overflow-hidden flex">
+                    <div class="h-full bg-blue-500 progress-fill" style="width: 80.1%;"></div>
+                    <div class="h-full bg-[#b91c1c] progress-fill" style="width: 19.9%;"></div>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-blue-400 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Aprovados (109) • +1
+                    </span>
+                    <span class="text-red-400 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#b91c1c]"></span> Falhas Residuais (27) • -1
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-[#18191e] border border-yellow-900/40 flex flex-col gap-2">
-              <div class="flex justify-between items-center">
-                <span class="font-bold text-white text-sm">Produto</span>
-                <span class="px-1.5 py-0.5 rounded bg-yellow-900/60 text-yellow-400 text-[10px] uppercase font-bold">Atenção</span>
-              </div>
-              <p class="text-xs text-gray-400">Falhas intermitentes em validação de alíquotas fiscais.</p>
-            </div>
-
-            <div class="p-4 rounded-xl bg-[#18191e] border border-emerald-900/40 flex flex-col gap-2">
-              <div class="flex justify-between items-center">
-                <span class="font-bold text-white text-sm">Financeiro & API</span>
-                <span class="px-1.5 py-0.5 rounded bg-emerald-900/60 text-emerald-400 text-[10px] uppercase font-bold">Estável</span>
-              </div>
-              <p class="text-xs text-gray-400">100% de conformidade com contratos e regras fiscais.</p>
+            <!-- Rodapé Card 2 -->
+            <div class="pt-4 border-t border-[#23252b] flex items-center justify-between text-xs">
+              <span class="text-gray-500">Critério Mínimo de Homologação: 95.0%</span>
+              <span class="text-red-400 font-semibold">Gap para Release: -14.9%</span>
             </div>
           </div>
         </div>
+
+        <!-- Seção Central: Histórico de Rodadas Salvas na Máquina -->
+        <div class="card-executive p-6 rounded-xl flex flex-col gap-4 border border-[#23252b] bg-[#141519]/90">
+          <div class="flex items-center justify-between border-b border-[#23252b] pb-4 flex-wrap gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px] text-blue-400">history</span>
+                <h2 class="text-base font-bold text-white tracking-tight">Histórico de Rodadas Salvas na Máquina</h2>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">Registro cronológico persistido em history.json a cada execução do teste automatizado</p>
+            </div>
+            <button onclick="exportHistoryJson()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-semibold transition-colors cursor-pointer shadow-sm">
+              <span class="material-symbols-outlined text-[16px]">download</span>
+              <span>Exportar JSON</span>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="text-[11px] font-bold uppercase tracking-wider text-gray-400 border-b border-[#23252b]">
+                  <th class="py-3 px-4">EXECUÇÃO / DATA</th>
+                  <th class="py-3 px-4">DURAÇÃO</th>
+                  <th class="py-3 px-4">TOTAL</th>
+                  <th class="py-3 px-4">APROVADOS</th>
+                  <th class="py-3 px-4">FALHAS</th>
+                  <th class="py-3 px-4">TAXA (%)</th>
+                  <th class="py-3 px-4">CLASSIFICAÇÃO</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#23252b]/60">
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2">
+                    <span>20/10/2026 09:01:39</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-950/70 border border-blue-800/60 text-blue-400 uppercase">Atual</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">43m 21s</td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">136</td>
+                  <td class="py-3.5 px-4 font-mono text-emerald-400 font-medium">109</td>
+                  <td class="py-3.5 px-4 font-mono text-red-400 font-medium">27</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <span class="font-mono font-semibold text-white">80.1%</span>
+                      <div class="w-16 h-1.5 rounded-full bg-[#1e2025] overflow-hidden">
+                        <div class="h-full bg-blue-500" style="width: 80.1%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-950/70 border border-blue-800/60 text-blue-400 flex items-center gap-1.5 w-fit">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Estável (80.1%)
+                    </span>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2">
+                    <span>19/10/2026 16:53:16</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#1e2025] border border-[#2d3038] text-gray-400 uppercase">Anterior</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">40m 26s</td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">136</td>
+                  <td class="py-3.5 px-4 font-mono text-emerald-400 font-medium">108</td>
+                  <td class="py-3.5 px-4 font-mono text-red-400 font-medium">28</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <span class="font-mono font-semibold text-white">79.4%</span>
+                      <div class="w-16 h-1.5 rounded-full bg-[#1e2025] overflow-hidden">
+                        <div class="h-full bg-red-500" style="width: 79.4%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-950/70 border border-red-800/60 text-red-400 flex items-center gap-1.5 w-fit">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Instável (79.4%)
+                    </span>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white">
+                    <span>16/10/2026 15:20:00</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">38m 12s</td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">128</td>
+                  <td class="py-3.5 px-4 font-mono text-emerald-400 font-medium">97</td>
+                  <td class="py-3.5 px-4 font-mono text-red-400 font-medium">31</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-2.5">
+                      <span class="font-mono font-semibold text-white">75.8%</span>
+                      <div class="w-16 h-1.5 rounded-full bg-[#1e2025] overflow-hidden">
+                        <div class="h-full bg-red-500" style="width: 75.8%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-950/70 border border-red-800/60 text-red-400 flex items-center gap-1.5 w-fit">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Instável (75.8%)
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Seção Inferior: Matriz de Estabilidade e Risco de Regressão por Módulo -->
+        <div class="card-executive p-6 rounded-xl flex flex-col gap-4 border border-[#23252b] bg-[#141519]/90">
+          <div class="flex items-center justify-between border-b border-[#23252b] pb-4 flex-wrap gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px] text-blue-400">grid_view</span>
+                <h2 class="text-base font-bold text-white tracking-tight">Matriz de Estabilidade e Risco de Regressão por Módulo</h2>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">Áreas que requerem atenção prioritária de correção antes do próximo ciclo de deploy</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-red-400 font-semibold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> 1 Crítico
+              </span>
+              <span class="text-xs text-gray-300 font-semibold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> 1 Alto
+              </span>
+              <span class="text-xs text-gray-400 font-semibold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span> 7 Baixo
+              </span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="text-[11px] font-bold uppercase tracking-wider text-gray-400 border-b border-[#23252b]">
+                  <th class="py-3 px-4">MÓDULO DO ERP</th>
+                  <th class="py-3 px-4">TOTAL DE TESTES</th>
+                  <th class="py-3 px-4">APROVADOS</th>
+                  <th class="py-3 px-4">FALHAS</th>
+                  <th class="py-3 px-4">TAXA DE CONFORMIDADE</th>
+                  <th class="py-3 px-4">NÍVEL DE RISCO</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#23252b]/60">
+                <!-- VaiDeFood -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-red-400">restaurant</span>
+                    <span>VaiDeFood</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">34</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">11</td>
+                  <td class="py-3.5 px-4 font-mono text-red-400 font-semibold">23</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">32.4%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 32.4%;"></div>
+                        <div class="h-full bg-[#b91c1c]" style="width: 67.6%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#450a0a]/80 border border-[#7f1d1d]/80 text-[#fca5a5] font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 w-fit">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span> CRÍTICO
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Produto -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">inventory_2</span>
+                    <span>Produto</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">6</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">2</td>
+                  <td class="py-3.5 px-4 font-mono text-red-400 font-semibold">4</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">33.3%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 33.3%;"></div>
+                        <div class="h-full bg-[#b91c1c]" style="width: 66.7%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#202228] border border-[#353842] text-gray-300 font-bold text-xs uppercase tracking-wider w-fit">
+                      ALTO
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Financeiro -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">account_balance_wallet</span>
+                    <span>Financeiro</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">20</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">20</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Movimentação -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">swap_horiz</span>
+                    <span>Movimentação</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">22</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">22</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- API -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">terminal</span>
+                    <span>API</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">23</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">23</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Estoque -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">warehouse</span>
+                    <span>Estoque</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">16</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">16</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Administrativo -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">domain</span>
+                    <span>Administrativo</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">7</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">7</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Configuração -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">settings</span>
+                    <span>Configuração</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">4</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">4</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Manufatura -->
+                <tr class="hover:bg-surface-container-high/30 transition-colors">
+                  <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-gray-400">precision_manufacturing</span>
+                    <span>Manufatura</span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono font-medium text-white">4</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-300">4</td>
+                  <td class="py-3.5 px-4 font-mono text-gray-500">0</td>
+                  <td class="py-3.5 px-4">
+                    <div class="flex items-center gap-3">
+                      <span class="font-mono font-semibold text-white w-12">100%</span>
+                      <div class="w-36 sm:w-52 h-2 rounded-full bg-[#1e2025] overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width: 100%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-1 rounded bg-[#16181d] border border-[#252830] text-gray-400 font-medium text-xs w-fit">
+                      Baixo
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Rodapé Card 4 -->
+          <div class="pt-4 border-t border-[#23252b] flex items-center justify-between text-xs flex-wrap gap-2">
+            <div class="flex items-center gap-2 text-gray-400">
+              <span class="material-symbols-outlined text-[16px] text-blue-400">info</span>
+              <span>Diagnóstico Automatizado: <strong class="text-white">85.1%</strong> das 27 falhas totais estão centralizadas no módulo <strong class="text-red-400">VaiDeFood</strong> (23 falhas).</span>
+            </div>
+            <span class="text-gray-500 font-mono">Última recalibração: 09:01:39</span>
+          </div>
+        </div>
+
       </section>
 
     </main>
