@@ -1223,3 +1223,233 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// ============================================================
+// GRÁFICOS & DISTRIBUIÇÃO POR MÓDULO DO ERP
+// ============================================================
+const MODULE_COLOR_MAP = {
+  'VaiDeFood': '#ef4444',
+  'API': '#3b82f6',
+  'Movimentação': '#60a5fa',
+  'Financeiro': '#93c5fd',
+  'Estoque': '#bfdbfe',
+  'Administrativo': '#e2e8f0',
+  'Produto': '#f87171',
+  'Configuração': '#cbd5e1',
+  'Manufatura': '#94a3b8'
+};
+
+const MODULE_ARC_IDS = {
+  'VaiDeFood': 'module-arc-vaidefood',
+  'API': 'module-arc-api',
+  'Movimentação': 'module-arc-movimentacao',
+  'Financeiro': 'module-arc-financeiro',
+  'Estoque': 'module-arc-estoque',
+  'Administrativo': 'module-arc-administrativo',
+  'Produto': 'module-arc-produto',
+  'Configuração': 'module-arc-configuracao',
+  'Manufatura': 'module-arc-manufatura'
+};
+
+let activeSelectedModule = null;
+
+function focusModuleDonut(moduleName) {
+  activeSelectedModule = (moduleName === 'all' || activeSelectedModule === moduleName) ? null : moduleName;
+  updateModuleDonutVisuals(activeSelectedModule);
+}
+
+function previewModuleSlice(moduleName) {
+  if (activeSelectedModule) return;
+  updateModuleDonutVisuals(moduleName, true);
+}
+
+function resetModulePreview() {
+  if (activeSelectedModule) return;
+  updateModuleDonutVisuals(null);
+}
+
+function updateModuleDonutVisuals(mod, isHover = false) {
+  const centerPct = document.getElementById('module-donut-center-pct');
+  const centerTitle = document.getElementById('module-donut-center-title');
+  const centerSub = document.getElementById('module-donut-center-sub');
+
+  const data = window.universalQaState.suiteData || DEFAULT_DEMO_DATA;
+  const totalSuiteTests = data.summary.total || 136;
+
+  // Atualiza botões pills
+  document.querySelectorAll('.module-filter-pill').forEach(pill => {
+    const pillMod = pill.getAttribute('data-module');
+    if ((!mod && pillMod === 'all') || (mod && pillMod === mod)) {
+      pill.classList.add('bg-blue-600', 'text-white', 'border-blue-500');
+      pill.classList.remove('bg-[#18191e]', 'text-gray-300', 'border-[#282a30]');
+    } else {
+      pill.classList.remove('bg-blue-600', 'text-white', 'border-blue-500');
+      pill.classList.add('bg-[#18191e]', 'text-gray-300', 'border-[#282a30]');
+    }
+  });
+
+  if (!mod) {
+    if (centerPct) centerPct.textContent = '100%';
+    if (centerTitle) centerTitle.textContent = 'Todos os Módulos';
+    if (centerSub) centerSub.textContent = `${totalSuiteTests} testes no total`;
+
+    // Reseta arcos
+    Object.values(MODULE_ARC_IDS).forEach(arcId => {
+      const el = document.getElementById(arcId);
+      if (el) {
+        el.style.strokeWidth = '16';
+        el.style.opacity = '1';
+        el.style.filter = 'none';
+      }
+    });
+    return;
+  }
+
+  const moduleObj = (data.modules || []).find(m => m.name === mod) || { total: 0, passed: 0, failed: 0 };
+  const pct = ((moduleObj.total / totalSuiteTests) * 100).toFixed(1);
+
+  if (centerPct) centerPct.textContent = `${pct}%`;
+  if (centerTitle) centerTitle.textContent = mod;
+  if (centerSub) centerSub.textContent = `${moduleObj.total} testes (${moduleObj.passed} ok / ${moduleObj.failed} falhas)`;
+
+  const targetArcId = MODULE_ARC_IDS[mod];
+  Object.entries(MODULE_ARC_IDS).forEach(([mName, arcId]) => {
+    const el = document.getElementById(arcId);
+    if (!el) return;
+    if (arcId === targetArcId) {
+      el.style.strokeWidth = '22';
+      el.style.opacity = '1';
+      el.style.filter = `drop-shadow(0 0 10px ${MODULE_COLOR_MAP[mName] || '#3b82f6'})`;
+    } else {
+      el.style.strokeWidth = '14';
+      el.style.opacity = '0.25';
+      el.style.filter = 'none';
+    }
+  });
+}
+
+function filterModuleCardsGrid(filterType) {
+  const cards = document.querySelectorAll('.module-card-item');
+  const btnAll = document.getElementById('btn-filter-mod-all');
+  const btnFailed = document.getElementById('btn-filter-mod-failed');
+  const btnPassed = document.getElementById('btn-filter-mod-passed');
+
+  [btnAll, btnFailed, btnPassed].forEach(b => {
+    if (b) {
+      b.classList.remove('bg-[#202228]', 'text-white');
+      b.classList.add('text-gray-400');
+    }
+  });
+
+  if (filterType === 'all' && btnAll) {
+    btnAll.classList.add('bg-[#202228]', 'text-white');
+    btnAll.classList.remove('text-gray-400');
+  } else if (filterType === 'failed' && btnFailed) {
+    btnFailed.classList.add('bg-[#202228]', 'text-white');
+    btnFailed.classList.remove('text-gray-400');
+  } else if (filterType === 'passed' && btnPassed) {
+    btnPassed.classList.add('bg-[#202228]', 'text-white');
+    btnPassed.classList.remove('text-gray-400');
+  }
+
+  cards.forEach(card => {
+    const hasFail = card.getAttribute('data-has-fail') === 'true';
+    if (filterType === 'all') {
+      card.classList.remove('hidden');
+    } else if (filterType === 'failed') {
+      card.classList.toggle('hidden', !hasFail);
+    } else if (filterType === 'passed') {
+      card.classList.toggle('hidden', hasFail);
+    }
+  });
+}
+
+function searchModuleCards(val) {
+  const query = (val || '').toLowerCase().trim();
+  const cards = document.querySelectorAll('.module-card-item');
+  cards.forEach(card => {
+    const mod = (card.getAttribute('data-module') || '').toLowerCase();
+    if (!query || mod.includes(query)) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+function toggleModuleTestsAccordion(moduleName, btn) {
+  const container = document.getElementById(`module-tests-${moduleName}`);
+  if (!container) return;
+
+  const isHidden = container.classList.contains('hidden');
+  const icon = btn ? btn.querySelector('.material-symbols-outlined') : null;
+
+  if (isHidden) {
+    container.classList.remove('hidden');
+    if (icon) icon.textContent = 'expand_less';
+
+    // Se estiver vazio, popula com os testes do módulo
+    if (container.children.length === 0) {
+      const data = window.universalQaState.suiteData || DEFAULT_DEMO_DATA;
+      const tests = (data.tests || []).filter(t => t.module === moduleName);
+      if (tests.length === 0) {
+        container.innerHTML = `<span class="text-[11px] text-gray-500 italic p-1">Nenhum detalhe adicional de teste encontrado.</span>`;
+      } else {
+        container.innerHTML = tests.map(t => {
+          const isPass = t.status === 'passed';
+          return `
+            <div class="flex items-center justify-between p-1.5 rounded bg-[#16171b] border border-[#23252b] hover:bg-[#1e2025] transition-colors cursor-pointer" onclick="inspectTestDetails('${t.id}')">
+              <div class="flex items-center gap-2 truncate pr-2">
+                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold uppercase ${isPass ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}">${isPass ? 'PASS' : 'FAIL'}</span>
+                <span class="text-[11px] font-medium text-gray-200 truncate" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</span>
+              </div>
+              <span class="text-[10px] font-mono text-gray-400 shrink-0">${t.durationFormatted}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  } else {
+    container.classList.add('hidden');
+    if (icon) icon.textContent = 'expand_more';
+  }
+}
+
+function toggleAllModuleCards(expand) {
+  const cards = document.querySelectorAll('.module-card-item');
+  cards.forEach(card => {
+    const mod = card.getAttribute('data-module');
+    const container = document.getElementById(`module-tests-${mod}`);
+    const btn = card.querySelector('button[onclick*="toggleModuleTestsAccordion"]');
+    const icon = btn ? btn.querySelector('.material-symbols-outlined') : null;
+    if (container) {
+      if (expand) {
+        if (container.classList.contains('hidden')) {
+          toggleModuleTestsAccordion(mod, btn);
+        }
+      } else {
+        container.classList.add('hidden');
+        if (icon) icon.textContent = 'expand_more';
+      }
+    }
+  });
+}
+
+function toggleSectionCollapse(elementId, btn) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const isHidden = el.classList.toggle('hidden');
+  const span = btn ? btn.querySelector('span:not(.material-symbols-outlined)') : null;
+  const icon = btn ? btn.querySelector('.material-symbols-outlined') : null;
+  if (span) span.textContent = isHidden ? 'Expandir' : 'Recolher';
+  if (icon) icon.textContent = isHidden ? 'expand_more' : 'expand_less';
+}
+
+function filterExecutionsByModule(moduleName) {
+  switchView('execucoes-e-resultados');
+  const searchInput = document.getElementById('qa-quick-search');
+  if (searchInput) {
+    searchInput.value = moduleName;
+    handleSearchInput(moduleName);
+  }
+}

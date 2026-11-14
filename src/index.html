@@ -607,73 +607,975 @@
       <!-- VIEW 5: GRÁFICOS & DISTRIBUIÇÃO            -->
       <!-- ========================================== -->
       <section id="view-graficos-e-distribuicao" class="view-panel hidden flex flex-col gap-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Gráfico de Tipos de Erro -->
-          <div class="card-executive p-6 rounded-xl flex flex-col gap-4">
-            <h3 class="text-sm font-semibold text-white">Classificação por Tipo de Falha (Pareto)</h3>
-            <div class="flex flex-col gap-3 pt-2">
+
+        <!-- Barra Superior de Controle e Cabeçalho -->
+        <div class="card-executive p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-[#23252b] bg-[#141519]/90">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-950/60 border border-blue-800/50 flex items-center justify-center text-blue-400 shrink-0">
+              <span class="material-symbols-outlined text-[22px]">donut_large</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-base font-bold text-white tracking-tight">Gráficos e Indicadores por Módulo do ERP</h2>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase bg-blue-950/70 border border-blue-800/60 text-blue-400">
+                  MAPEAMENTO QA ATIVO
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">
+                Análise proporcional e detalhada de testes por pasta de funcionalidade. Diminua ou expanda os cards conforme sua necessidade.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+            <button onclick="toggleAllModuleCards(true)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-semibold transition-colors cursor-pointer shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">unfold_more</span>
+              <span>Expandir Cards</span>
+            </button>
+            <button onclick="toggleAllModuleCards(false)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-semibold transition-colors cursor-pointer shadow-sm">
+              <span class="material-symbols-outlined text-[15px]">unfold_less</span>
+              <span>Recolher Cards</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seção 1: Visão Resumida (Proporção & Distribuição Geral da Suíte) -->
+        <div class="card-executive p-6 rounded-xl flex flex-col gap-5 border border-[#23252b] bg-[#141519]/90">
+          <div class="flex items-center justify-between border-b border-[#23252b] pb-4 flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-blue-400">public</span>
               <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-gray-300">Timeout / Espera Esgotada</span>
-                  <span class="text-red-400 font-semibold">18 (72%)</span>
+                <h3 class="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                  Visão Resumida
+                  <span class="text-xs font-normal text-gray-400">Proporção & Distribuição Geral da Suíte</span>
+                </h3>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-gray-400">136 testes • 9 seções mapeadas</span>
+              <button onclick="toggleSectionCollapse('section-visao-resumida-body', this)" class="text-xs text-gray-400 hover:text-white flex items-center gap-1 px-2 py-1 rounded bg-[#1e2025] border border-[#2d3038] transition-colors">
+                <span class="material-symbols-outlined text-[15px]">expand_less</span>
+                <span>Recolher</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="section-visao-resumida-body" class="flex flex-col gap-5">
+            <!-- Pílulas de Filtro Rápido de Módulo no Gráfico -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400 shrink-0">FILTRAR MÓDULO NO GRÁFICO:</span>
+              <button onclick="focusModuleDonut('all')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white border border-blue-500 shadow-sm transition-all" data-module="all">
+                Todos os Módulos 136
+              </button>
+              <button onclick="focusModuleDonut('VaiDeFood')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="VaiDeFood">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block mr-1"></span> VaiDeFood 34
+              </button>
+              <button onclick="focusModuleDonut('API')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="API">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block mr-1"></span> API 23
+              </button>
+              <button onclick="focusModuleDonut('Movimentação')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Movimentação">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-300 inline-block mr-1"></span> Movimentação 22
+              </button>
+              <button onclick="focusModuleDonut('Financeiro')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Financeiro">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-300 inline-block mr-1"></span> Financeiro 20
+              </button>
+              <button onclick="focusModuleDonut('Estoque')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Estoque">
+                <span class="w-1.5 h-1.5 rounded-full bg-sky-300 inline-block mr-1"></span> Estoque 16
+              </button>
+              <button onclick="focusModuleDonut('Administrativo')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Administrativo">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block mr-1"></span> Administrativo 7
+              </button>
+              <button onclick="focusModuleDonut('Produto')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Produto">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block mr-1"></span> Produto 6
+              </button>
+              <button onclick="focusModuleDonut('Configuração')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Configuração">
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block mr-1"></span> Configuração 4
+              </button>
+              <button onclick="focusModuleDonut('Manufatura')" class="module-filter-pill px-2.5 py-1 rounded-full text-xs font-medium bg-[#18191e] text-gray-300 hover:text-white border border-[#282a30] transition-all" data-module="Manufatura">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block mr-1"></span> Manufatura 4
+              </button>
+            </div>
+
+            <!-- Gráfico Donut de Módulos & Grade de Distribuição -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-2">
+              <!-- Donut Chart Central -->
+              <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
+                <div class="relative w-56 h-56 flex items-center justify-center">
+                  <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
+                    <circle cx="80" cy="80" r="62" stroke="#1c1d22" stroke-width="16" fill="transparent"></circle>
+                    <!-- Segmentos dos Módulos (Circunferência ≈ 389.55) -->
+                    <!-- VaiDeFood (34/136 = 25.0%) -> 97.38 -->
+                    <circle id="module-arc-vaidefood" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#ef4444" stroke-width="16" stroke-dasharray="97.38 292.17" stroke-dashoffset="0" fill="transparent" onclick="focusModuleDonut('VaiDeFood')"></circle>
+                    <!-- API (23/136 = 16.9%) -> 65.87 -->
+                    <circle id="module-arc-api" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#3b82f6" stroke-width="16" stroke-dasharray="65.87 323.68" stroke-dashoffset="-97.38" fill="transparent" onclick="focusModuleDonut('API')"></circle>
+                    <!-- Movimentação (22/136 = 16.2%) -> 63.0 -->
+                    <circle id="module-arc-movimentacao" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#60a5fa" stroke-width="16" stroke-dasharray="63.0 326.55" stroke-dashoffset="-163.25" fill="transparent" onclick="focusModuleDonut('Movimentação')"></circle>
+                    <!-- Financeiro (20/136 = 14.7%) -> 57.28 -->
+                    <circle id="module-arc-financeiro" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#93c5fd" stroke-width="16" stroke-dasharray="57.28 332.27" stroke-dashoffset="-226.25" fill="transparent" onclick="focusModuleDonut('Financeiro')"></circle>
+                    <!-- Estoque (16/136 = 11.8%) -> 45.83 -->
+                    <circle id="module-arc-estoque" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#bfdbfe" stroke-width="16" stroke-dasharray="45.83 343.72" stroke-dashoffset="-283.53" fill="transparent" onclick="focusModuleDonut('Estoque')"></circle>
+                    <!-- Administrativo (7/136 = 5.1%) -> 20.05 -->
+                    <circle id="module-arc-administrativo" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#e2e8f0" stroke-width="16" stroke-dasharray="20.05 369.5" stroke-dashoffset="-329.36" fill="transparent" onclick="focusModuleDonut('Administrativo')"></circle>
+                    <!-- Produto (6/136 = 4.4%) -> 17.18 -->
+                    <circle id="module-arc-produto" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#f87171" stroke-width="16" stroke-dasharray="17.18 372.37" stroke-dashoffset="-349.41" fill="transparent" onclick="focusModuleDonut('Produto')"></circle>
+                    <!-- Configuração (4/136 = 2.9%) -> 11.45 -->
+                    <circle id="module-arc-configuracao" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#cbd5e1" stroke-width="16" stroke-dasharray="11.45 378.1" stroke-dashoffset="-366.59" fill="transparent" onclick="focusModuleDonut('Configuração')"></circle>
+                    <!-- Manufatura (4/136 = 2.9%) -> 11.45 -->
+                    <circle id="module-arc-manufatura" class="donut-segment cursor-pointer transition-all duration-300" cx="80" cy="80" r="62" stroke="#94a3b8" stroke-width="16" stroke-dasharray="11.45 378.1" stroke-dashoffset="-378.04" fill="transparent" onclick="focusModuleDonut('Manufatura')"></circle>
+                  </svg>
+
+                  <!-- Centro do Gráfico -->
+                  <div class="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+                    <span id="module-donut-center-pct" class="font-headline-lg text-2xl font-bold tracking-tight text-white">100%</span>
+                    <span id="module-donut-center-title" class="text-[11px] font-semibold text-gray-300 uppercase tracking-wider mt-0.5">Todos os Módulos</span>
+                    <span id="module-donut-center-sub" class="text-[10px] text-gray-500 font-mono">136 testes no total</span>
+                  </div>
                 </div>
-                <div class="w-full h-2 rounded-full bg-[#23252b] overflow-hidden">
-                  <div class="h-full bg-red-600 rounded-full" style="width: 72%;"></div>
+                <p class="text-[11px] text-gray-400 mt-3 flex items-center gap-1">
+                  <span>👆</span> Passe o mouse ou clique em uma fatia para focar no módulo
+                </p>
+              </div>
+
+              <!-- Grade de Distribuição dos Módulos (2 Colunas) -->
+              <div class="lg:col-span-7 flex flex-col justify-between h-full gap-4">
+                <div class="flex items-center justify-between border-b border-[#23252b] pb-2">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">MÓDULOS MAPEADOS NAS PASTAS DE TESTE</span>
+                  <span class="text-[10px] font-mono text-gray-500 uppercase tracking-wider">HOVER PARA SINCRONIZAR</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <!-- Coluna 1 -->
+                  <div class="flex flex-col gap-2.5">
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-red-500/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('VaiDeFood')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('VaiDeFood')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                        <span class="font-medium text-white">VaiDeFood</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">25.0% <span class="text-gray-500 font-normal">(34)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-blue-400/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Movimentação')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Movimentação')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span>
+                        <span class="font-medium text-white">Movimentação</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">16.2% <span class="text-gray-500 font-normal">(22)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-sky-300/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Estoque')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Estoque')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-sky-300"></span>
+                        <span class="font-medium text-white">Estoque</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">11.8% <span class="text-gray-500 font-normal">(16)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-orange-400/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Produto')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Produto')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span>
+                        <span class="font-medium text-white">Produto</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">4.4% <span class="text-gray-500 font-normal">(6)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-emerald-400/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Manufatura')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Manufatura')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        <span class="font-medium text-white">Manufatura</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">2.9% <span class="text-gray-500 font-normal">(4)</span></span>
+                    </div>
+                  </div>
+
+                  <!-- Coluna 2 -->
+                  <div class="flex flex-col gap-2.5">
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-blue-500/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('API')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('API')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                        <span class="font-medium text-white">API</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">16.9% <span class="text-gray-500 font-normal">(23)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-indigo-400/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Financeiro')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Financeiro')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-300"></span>
+                        <span class="font-medium text-white">Financeiro</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">14.7% <span class="text-gray-500 font-normal">(20)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-slate-300/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Administrativo')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Administrativo')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+                        <span class="font-medium text-white">Administrativo</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">5.1% <span class="text-gray-500 font-normal">(7)</span></span>
+                    </div>
+
+                    <div class="module-legend-row flex items-center justify-between p-2 rounded-lg bg-[#18191e]/60 border border-transparent hover:border-gray-400/40 hover:bg-[#202228] transition-all cursor-pointer" onmouseenter="previewModuleSlice('Configuração')" onmouseleave="resetModulePreview()" onclick="focusModuleDonut('Configuração')">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
+                        <span class="font-medium text-white">Configuração</span>
+                      </div>
+                      <span class="font-mono text-gray-300 font-semibold">2.9% <span class="text-gray-500 font-normal">(4)</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Rodapé da Visão Resumida -->
+                <div class="pt-3 border-t border-[#23252b] flex items-center justify-between text-xs flex-wrap gap-2">
+                  <span class="text-gray-300 font-medium flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                    Taxa Global de Sucesso: <strong class="text-white">80.1%</strong>
+                  </span>
+                  <span class="text-red-400 font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">warning</span>
+                    27 falhas detectadas em 2 módulos
+                  </span>
                 </div>
               </div>
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-gray-300">Falha de Asserção (Value Mismatch)</span>
-                  <span class="text-yellow-400 font-semibold">5 (20%)</span>
-                </div>
-                <div class="w-full h-2 rounded-full bg-[#23252b] overflow-hidden">
-                  <div class="h-full bg-yellow-500 rounded-full" style="width: 20%;"></div>
-                </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção 2: Visão Geral da Suíte: Todos os 9 Módulos (Faixa de KPIs) -->
+        <div class="card-executive p-5 rounded-xl border border-[#23252b] bg-[#141519]/90">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-blue-400">dashboard</span>
+              Visão Geral da Suíte: Todos os 9 Módulos
+            </h3>
+            <span class="text-xs text-gray-500">Passe o mouse ou clique no gráfico de pizza para focar</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pt-3 border-t border-[#23252b]">
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">TOTAL DE TESTES</span>
+              <span class="text-2xl font-bold font-mono text-white">136</span>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">TOTAL APROVADOS</span>
+              <span class="text-2xl font-bold font-mono text-white">109</span>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">TOTAL FALHAS</span>
+              <span class="text-2xl font-bold font-mono text-red-400">27</span>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">TAXA DE SUCESSO</span>
+              <span class="text-2xl font-bold font-mono text-white">80.1%</span>
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">MÓDULOS MAPEADOS</span>
+              <span class="text-2xl font-bold font-mono text-blue-400">9</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seção 3: Visão Detalhada (Cards dos 9 Módulos) -->
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px] text-blue-400">bar_chart</span>
+                <h3 class="text-base font-bold text-white tracking-tight">Visão Detalhada</h3>
               </div>
-              <div>
-                <div class="flex justify-between text-xs mb-1">
-                  <span class="text-gray-300">Socket / Latência de Gateway</span>
-                  <span class="text-blue-400 font-semibold">2 (8%)</span>
-                </div>
-                <div class="w-full h-2 rounded-full bg-[#23252b] overflow-hidden">
-                  <div class="h-full bg-blue-500 rounded-full" style="width: 8%;"></div>
-                </div>
+              <p class="text-xs text-gray-400 mt-0.5">Gráficos de Aprovação e Falha por Seção</p>
+            </div>
+
+            <!-- Filtros e Busca de Seção -->
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex items-center rounded-lg bg-[#101114] border border-[#23252b] p-0.5">
+                <button onclick="filterModuleCardsGrid('all')" id="btn-filter-mod-all" class="px-3 py-1 rounded-md text-xs font-semibold bg-[#202228] text-white transition-all">
+                  Todas as Seções (9)
+                </button>
+                <button onclick="filterModuleCardsGrid('failed')" id="btn-filter-mod-failed" class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-all">
+                  Com Falhas (2)
+                </button>
+                <button onclick="filterModuleCardsGrid('passed')" id="btn-filter-mod-passed" class="px-3 py-1 rounded-md text-xs font-medium text-gray-400 hover:text-white transition-all">
+                  100% Aprovadas (7)
+                </button>
+              </div>
+
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-[16px]">search</span>
+                <input type="text" id="filter-module-search" oninput="searchModuleCards(this.value)" placeholder="Pesquisar seção..." class="bg-[#101114] border border-[#23252b] text-xs text-white rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-blue-500 w-44" />
               </div>
             </div>
           </div>
 
-          <!-- Histograma de Duração -->
-          <div class="card-executive p-6 rounded-xl flex flex-col gap-4">
-            <h3 class="text-sm font-semibold text-white">Dispersão de Tempo de Execução</h3>
-            <div class="flex items-end gap-3 h-40 pt-4 border-b border-[#23252b]">
-              <div class="flex-1 flex flex-col items-center gap-1">
-                <div class="w-full bg-blue-600 rounded-t" style="height: 40%;"></div>
-                <span class="text-[10px] text-gray-400">&lt; 1s</span>
+          <!-- Grade 3x3 de Cards de Módulo -->
+          <div id="module-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <!-- Card 1: VaiDeFood -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-red-500/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="VaiDeFood" data-has-fail="true">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-red-500"></span> VaiDeFood
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/VaiDeFood</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-red-950/80 border border-red-800/80 text-red-400 text-[10px] font-bold uppercase">
+                    23 falha(s) Crítico
+                  </span>
+                </div>
+
+                <!-- Radial Gauge & Details -->
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <!-- 32.4% Aprovação (Circunferência ≈ 201.06) -> 65.14 -->
+                      <circle cx="40" cy="40" r="32" stroke="#3b82f6" stroke-width="7" stroke-dasharray="65.14 201" stroke-dashoffset="0" fill="none"></circle>
+                      <!-- 67.6% Falha -> 135.92 -->
+                      <circle cx="40" cy="40" r="32" stroke="#ef4444" stroke-width="7" stroke-dasharray="135.92 201" stroke-dashoffset="-65.14" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">32.4%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">11/34 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">11 (32.4%)</span>
+                    </div>
+                    <div class="flex items-center justify-between px-2 py-0.5 rounded bg-red-950/40 border border-red-900/40 text-red-300">
+                      <span class="flex items-center gap-1 text-[11px] font-semibold"><span class="text-red-400">✕</span> Falhas</span>
+                      <span class="font-mono font-bold">23 (67.6%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>25%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('VaiDeFood'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Estatísticas Rápidas -->
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">34</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">11</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono font-bold text-red-400">23</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-red-400">32.4%</span>
+                  </div>
+                </div>
               </div>
-              <div class="flex-1 flex flex-col items-center gap-1">
-                <div class="w-full bg-blue-500 rounded-t" style="height: 75%;"></div>
-                <span class="text-[10px] text-gray-400">1-5s</span>
-              </div>
-              <div class="flex-1 flex flex-col items-center gap-1">
-                <div class="w-full bg-blue-400 rounded-t" style="height: 100%;"></div>
-                <span class="text-[10px] text-gray-400">5-15s</span>
-              </div>
-              <div class="flex-1 flex flex-col items-center gap-1">
-                <div class="w-full bg-red-600 rounded-t" style="height: 60%;"></div>
-                <span class="text-[10px] text-gray-400">15-30s</span>
-              </div>
-              <div class="flex-1 flex flex-col items-center gap-1">
-                <div class="w-full bg-red-800 rounded-t" style="height: 25%;"></div>
-                <span class="text-[10px] text-gray-400">&gt; 30s</span>
+
+              <!-- Accordion de Testes do Módulo -->
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('VaiDeFood', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (34)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-VaiDeFood" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
               </div>
             </div>
-            <div class="flex justify-between text-xs text-gray-500">
-              <span>Média: 19.1s</span>
-              <span>P95: 28.4s</span>
-              <span>P99: 29.8s</span>
+
+            <!-- Card 2: API -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-blue-500/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="API" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-blue-500"></span> API
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/API</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#3b82f6" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">23/23 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">23 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>16.9%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('API'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">23</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">23</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('API', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (23)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-API" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
             </div>
+
+            <!-- Card 3: Movimentação -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-blue-400/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Movimentação" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-blue-300"></span> Movimentação
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Movimentação</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#60a5fa" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">22/22 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">22 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>16.2%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Movimentação'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">22</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">22</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Movimentação', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (22)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Movimentação" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Card 4: Financeiro -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-indigo-400/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Financeiro" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-indigo-300"></span> Financeiro
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Financeiro</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#93c5fd" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">20/20 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">20 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>14.7%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Financeiro'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">20</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">20</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Financeiro', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (20)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Financeiro" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Card 5: Estoque -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-sky-300/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Estoque" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-sky-300"></span> Estoque
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Estoque</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#bfdbfe" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">16/16 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">16 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>11.8%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Estoque'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">16</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">16</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Estoque', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (16)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Estoque" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Card 6: Administrativo -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-slate-300/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Administrativo" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-slate-300"></span> Administrativo
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Administrativo</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#e2e8f0" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">7/7 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">7 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>5.1%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Administrativo'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">7</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">7</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Administrativo', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (7)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Administrativo" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Card 7: Produto -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-orange-500/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Produto" data-has-fail="true">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-orange-400"></span> Produto
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Produto</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-red-950/80 border border-red-800/80 text-orange-300 text-[10px] font-bold uppercase">
+                    4 falhas Atenção
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <!-- 33.3% Aprovação -> 67.0 -->
+                      <circle cx="40" cy="40" r="32" stroke="#3b82f6" stroke-width="7" stroke-dasharray="67.0 201" stroke-dashoffset="0" fill="none"></circle>
+                      <!-- 66.7% Falha -> 134.0 -->
+                      <circle cx="40" cy="40" r="32" stroke="#ef4444" stroke-width="7" stroke-dasharray="134.0 201" stroke-dashoffset="-67.0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">33.3%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">2/6 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">2 (33.3%)</span>
+                    </div>
+                    <div class="flex items-center justify-between px-2 py-0.5 rounded bg-red-950/40 border border-red-900/40 text-red-300">
+                      <span class="flex items-center gap-1 text-[11px] font-semibold"><span class="text-red-400">✕</span> Falhas</span>
+                      <span class="font-mono font-bold">4 (66.7%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>4.4%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Produto'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">6</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">2</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono font-bold text-red-400">4</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-red-400">33.3%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Produto', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (6)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Produto" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Card 8: Configuração -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-gray-400/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Configuração" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-gray-400"></span> Configuração
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Configuracao</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#cbd5e1" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">4/4 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">4 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>2.9%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Configuração'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">4</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">4</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Configuração', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (4)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Configuração" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
+            <!-- Card 9: Manufatura -->
+            <div class="module-card-item card-executive p-5 rounded-xl border border-[#23252b] hover:border-emerald-400/40 bg-[#141519]/90 flex flex-col justify-between transition-all" data-module="Manufatura" data-has-fail="false">
+              <div>
+                <div class="flex items-start justify-between gap-2 border-b border-[#23252b] pb-3">
+                  <div>
+                    <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Manufatura
+                    </h4>
+                    <span class="text-[11px] font-mono text-gray-500">Test/Web/Manufatura</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-blue-950/70 border border-blue-800/60 text-blue-400 text-[10px] font-bold uppercase">
+                    ✓ 100% OK
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-4 py-4">
+                  <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 80 80">
+                      <circle cx="40" cy="40" r="32" stroke="#1e2025" stroke-width="7" fill="none"></circle>
+                      <circle cx="40" cy="40" r="32" stroke="#94a3b8" stroke-width="7" stroke-dasharray="201 201" stroke-dashoffset="0" fill="none"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span class="text-xs font-bold text-white">100%</span>
+                      <span class="text-[8px] font-bold text-gray-400 uppercase">APROVAÇÃO</span>
+                      <span class="text-[8px] font-mono text-gray-500">4/4 ok</span>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col gap-1.5 text-xs">
+                    <div class="flex items-center justify-between text-gray-300">
+                      <span class="flex items-center gap-1 text-[11px]"><span class="text-emerald-400">✓</span> Aprovados</span>
+                      <span class="font-mono font-medium">4 (100%)</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-400">
+                      <span class="flex items-center gap-1 text-[11px]">✕ Falhas</span>
+                      <span class="font-mono">0 (0.0%)</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+                      <span>Proporção na suíte: <strong>2.9%</strong></span>
+                      <a href="#" onclick="filterExecutionsByModule('Manufatura'); return false;" class="text-blue-400 hover:underline">→ Filtrar</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 p-2 rounded-lg bg-[#101114] border border-[#23252b] text-center text-xs">
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TOTAL</span>
+                    <span class="font-mono font-semibold text-white">4</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">APROV.</span>
+                    <span class="font-mono font-semibold text-gray-300">4</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">FALHAS</span>
+                    <span class="font-mono text-gray-500">0</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] uppercase text-gray-500 font-bold block">TAXA</span>
+                    <span class="font-mono font-semibold text-white">100%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-[#23252b]">
+                <button onclick="toggleModuleTestsAccordion('Manufatura', this)" class="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white py-1 transition-colors">
+                  <span>Exibir testes desta seção (4)</span>
+                  <span class="material-symbols-outlined text-[16px] transition-transform">expand_more</span>
+                </button>
+                <div id="module-tests-Manufatura" class="hidden mt-2 pt-2 border-t border-[#23252b]/60 flex flex-col gap-1.5 max-h-44 overflow-y-auto pr-1"></div>
+              </div>
+            </div>
+
           </div>
         </div>
+
       </section>
 
       <!-- ========================================== -->
