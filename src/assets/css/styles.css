@@ -152,3 +152,429 @@
     transform: none !important;
   }
 }
+
+/* ============================================================
+   TEMA CLARO GLOBAL ULTRA-REFINADO (LIGHT MODE EXECUTIVO)
+   ============================================================ */
+
+/* 1. Base e Fundo Geral */
+html.light, body.light {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Shader Radar no tema claro */
+.light #shader-canvas {
+  opacity: 0.18 !important;
+  filter: invert(0.85) contrast(1.1);
+}
+
+/* 2. Header & Navegação Superior */
+.light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+.light header .text-white {
+  color: #0f172a !important;
+}
+
+.light #current-timestamp,
+.light #header-framework-badge {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+.light #header-fail-badge {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #b91c1c !important;
+}
+
+.light #btn-copy-summary {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+.light #btn-copy-summary:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light #btn-refresh {
+  background-color: #2563eb !important;
+  border-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+.light #btn-refresh:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.light button[onclick="toggleTheme()"] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+.light button[onclick="toggleTheme()"]:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Navegação por Abas */
+.light nav {
+  border-top-color: #e2e8f0 !important;
+}
+
+.light nav a.text-white,
+.light nav a.border-white {
+  color: #2563eb !important;
+  border-bottom-color: #2563eb !important;
+  font-weight: 700 !important;
+}
+
+.light nav a.text-gray-400 {
+  color: #64748b !important;
+}
+.light nav a.text-gray-400:hover {
+  color: #0f172a !important;
+}
+
+.light nav span.bg-\[\#18191e\] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* 3. Cartões Executivos (.card-executive) */
+.light .card-executive {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light .card-executive:hover {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* 4. Tipografia e Textos */
+.light .text-white {
+  color: #0f172a !important;
+}
+.light .text-gray-200 {
+  color: #1e293b !important;
+}
+.light .text-gray-300 {
+  color: #334155 !important;
+}
+.light .text-gray-400 {
+  color: #64748b !important;
+}
+.light .text-gray-500 {
+  color: #64748b !important;
+}
+.light .text-outline {
+  color: #94a3b8 !important;
+}
+.light .text-on-surface {
+  color: #0f172a !important;
+}
+.light .text-on-surface-variant {
+  color: #64748b !important;
+}
+
+/* 5. Cores de Fundo Escuras Mapeadas para Tons Claros */
+.light .bg-\[\#141519\],
+.light .bg-\[\#141519\]\/90,
+.light .bg-\[\#141519\]\/80 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-\[\#101114\],
+.light .bg-\[\#101114\]\/80,
+.light .bg-\[\#0a0a0c\],
+.light .bg-\[\#0a0a0c\]\/80,
+.light .bg-\[\#0e0f12\],
+.light .bg-\[\#0e0f12\]\/80,
+.light .bg-\[\#16181d\] {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-\[\#18191e\],
+.light .bg-\[\#18191e\]\/80,
+.light .bg-\[\#18191e\]\/60,
+.light .bg-\[\#16171b\],
+.light .bg-\[\#1a1c22\],
+.light .bg-\[\#1e2025\] {
+  background-color: #f1f5f9 !important;
+}
+
+.light .bg-\[\#202228\],
+.light .bg-\[\#252830\] {
+  background-color: #e2e8f0 !important;
+}
+
+.light .bg-surface-container,
+.light .bg-surface-container-low,
+.light .bg-surface-container-lowest {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-surface-container-high {
+  background-color: #e2e8f0 !important;
+}
+
+/* 6. Bordas e Separadores */
+.light .border-\[\#23252b\],
+.light .border-\[\#23252b\]\/60,
+.light .border-\[\#23252b\]\/80,
+.light .border-\[\#26282e\],
+.light .border-surface-container-high,
+.light .border-surface-container-high\/60 {
+  border-color: #e2e8f0 !important;
+}
+
+.light .border-\[\#282a30\],
+.light .border-\[\#2d3038\],
+.light .border-\[\#30333d\],
+.light .border-\[\#353842\],
+.light .border-\[\#2a2b33\] {
+  border-color: #cbd5e1 !important;
+}
+
+/* 7. Gráficos Donut e SVG */
+.light circle[stroke="#1e2025"],
+.light circle[stroke="#1c1d22"],
+.light circle[stroke="#202126"],
+.light circle.text-\[\#202126\] {
+  stroke: #e2e8f0 !important;
+}
+
+.light #donut-center-value,
+.light #module-donut-center-pct {
+  color: #0f172a !important;
+}
+
+.light #module-donut-center-title {
+  color: #334155 !important;
+}
+
+.light #module-donut-center-sub {
+  color: #64748b !important;
+}
+
+.light .donut-legend-row {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+.light .donut-legend-row:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+.light .donut-legend-row .text-white {
+  color: #0f172a !important;
+}
+.light .donut-legend-selected.border-blue-500 {
+  background-color: #eff6ff !important;
+  border-color: #3b82f6 !important;
+}
+.light .donut-legend-selected.border-red-500 {
+  background-color: #fef2f2 !important;
+  border-color: #ef4444 !important;
+}
+.light .donut-legend-selected.border-gray-400 {
+  background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+.light .module-legend-row {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+.light .module-legend-row:hover {
+  background-color: #f1f5f9 !important;
+}
+.light .module-legend-row .text-white {
+  color: #0f172a !important;
+}
+.light .module-legend-row .text-gray-300 {
+  color: #1e293b !important;
+}
+.light .module-filter-pill:not(.bg-blue-600) {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+.light .module-filter-pill:not(.bg-blue-600):hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* 8. Badges e Destaques no Tema Claro */
+.light .bg-blue-950\/60,
+.light .bg-blue-950\/70,
+.light .bg-blue-950\/20,
+.light .bg-blue-900\/40,
+.light .bg-primary-container\/20 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+.light .text-blue-400,
+.light .text-primary {
+  color: #2563eb !important;
+}
+
+.light .bg-red-950\/60,
+.light .bg-red-950\/70,
+.light .bg-red-950\/80,
+.light .bg-red-950\/40,
+.light .bg-\[\#450a0a\]\/80,
+.light .bg-\[\#450a0a\]\/70,
+.light .bg-\[\#450a0a\]\/60 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #b91c1c !important;
+}
+.light .text-red-400,
+.light .text-red-300,
+.light .text-\[\#fca5a5\] {
+  color: #dc2626 !important;
+}
+
+.light .bg-emerald-950\/60,
+.light .bg-emerald-950\/70,
+.light .bg-emerald-950\/20,
+.light .bg-secondary-container\/40 {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+.light .text-emerald-400,
+.light .text-emerald-300,
+.light .text-\[\#86efac\] {
+  color: #16a34a !important;
+}
+
+/* 9. Tabelas e Inputs */
+.light table thead tr {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+.light table th {
+  color: #475569 !important;
+}
+.light table tr:hover {
+  background-color: #f8fafc !important;
+}
+.light table td {
+  border-color: #f1f5f9 !important;
+}
+
+.light input {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+.light input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* 10. Drawer de Inspeção & Modal de Vídeo */
+.light #detail-drawer {
+  background-color: #ffffff !important;
+  border-left: 1px solid #e2e8f0 !important;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.08) !important;
+}
+.light #detail-drawer .bg-\[\#141519\] {
+  background-color: #f8fafc !important;
+}
+.light #detail-drawer pre,
+.light #detail-drawer code {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+.light #drawer-backdrop {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+}
+
+.light #video-modal .card-executive {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* 11. Toast Flutuante e Rodapé */
+.light #app-toast {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light footer {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-top-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+.light footer .text-white {
+  color: #0f172a !important;
+}
+
+/* 12. Botões de Ação e Pílulas de Filtro nos Cartões */
+.light button.bg-surface-container,
+.light button.bg-\[\#1e2025\],
+.light button.bg-\[\#1a1c22\],
+.light button.bg-\[\#202228\],
+.light button.bg-\[\#18191e\] {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+.light button.bg-surface-container:hover,
+.light button.bg-\[\#1e2025\]:hover,
+.light button.bg-\[\#1a1c22\]:hover,
+.light button.bg-\[\#202228\]:hover,
+.light button.bg-\[\#18191e\]:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light .qa-status-pill:not(.bg-blue-600) {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* Banner de Ingestão Drag & Drop */
+.light .bg-blue-950\/20 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+.light .text-blue-300 {
+  color: #1d4ed8 !important;
+}
+.light .bg-blue-900\/40 {
+  background-color: #dbeafe !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+.light .bg-blue-800\/50 {
+  background-color: #bfdbfe !important;
+  border-color: #60a5fa !important;
+  color: #1e40af !important;
+}
+
+/* Linhas decorativas dos KPIs */
+.light .h-\[2px\].bg-\[\#23252b\] {
+  background-color: #cbd5e1 !important;
+}
+
+/* Performance por Módulo na Visão Geral */
+.light .group\/module:hover {
+  background-color: #f1f5f9 !important;
+}
+.light .group\/module .text-primary {
+  color: #2563eb !important;
+}

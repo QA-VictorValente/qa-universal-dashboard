@@ -550,16 +550,23 @@ function toggleTheme() {
   if (newTheme === 'dark') {
     html.classList.remove('light');
     html.classList.add('dark');
+    document.body.classList.remove('light');
+    document.body.classList.add('dark');
     document.body.style.backgroundColor = '#0c0c0e';
     document.body.style.color = '#ffffff';
   } else {
     html.classList.remove('dark');
     html.classList.add('light');
-    document.body.style.backgroundColor = '#f5f2eb';
-    document.body.style.color = 'rgb(41, 37, 36)';
+    document.body.classList.remove('dark');
+    document.body.classList.add('light');
+    document.body.style.backgroundColor = '#f8fafc';
+    document.body.style.color = '#0f172a';
   }
 
   window.universalQaState.currentTheme = newTheme;
+  try {
+    localStorage.setItem('universal_qa_theme', newTheme);
+  } catch (e) {}
 
   // Atualiza Shader WebGL
   if (window.TacticalRadarShader) {
@@ -570,10 +577,10 @@ function toggleTheme() {
   const themeBtnIcon = document.getElementById('theme-toggle-icon');
   const themeBtnText = document.getElementById('theme-toggle-text');
   if (themeBtnIcon) {
-    themeBtnIcon.textContent = newTheme === 'dark' ? 'dark_mode' : 'light_mode';
+    themeBtnIcon.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
   }
   if (themeBtnText) {
-    themeBtnText.textContent = newTheme === 'dark' ? 'Escuro' : 'Claro';
+    themeBtnText.textContent = newTheme === 'dark' ? 'Claro' : 'Escuro';
   }
 }
 
@@ -1178,6 +1185,14 @@ function escapeJsString(str) {
 
 // Inicialização Geral no DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
+  // Verifica tema salvo no navegador
+  try {
+    const savedTheme = localStorage.getItem('universal_qa_theme');
+    if (savedTheme === 'light') {
+      toggleTheme();
+    }
+  } catch (e) {}
+
   // Inicializa o Radar WebGL
   if (window.TacticalRadarShader) {
     window.TacticalRadarShader.init('shader-canvas', window.universalQaState.currentTheme);
