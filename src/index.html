@@ -156,13 +156,23 @@
         
         <!-- Banner de Ingestão Rápida / Drag & Drop -->
         <div class="card-executive p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-blue-900/30 bg-blue-950/20">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg bg-blue-900/40 border border-blue-700/50 flex items-center justify-center text-blue-400">
-              <span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+          <div class="flex items-center gap-3 cursor-pointer group flex-1" onclick="document.getElementById('file-upload-input').click()" title="Clique para escolher um relatório do seu computador (.xml ou .json)">
+            <div class="w-10 h-10 rounded-lg bg-blue-900/40 border border-blue-700/50 flex items-center justify-center text-blue-400 group-hover:scale-105 group-hover:bg-blue-800/60 transition-all shadow-md">
+              <span class="material-symbols-outlined text-[22px]">cloud_upload</span>
             </div>
             <div>
-              <h4 class="text-xs font-semibold uppercase tracking-wider text-blue-300">Carregar Relatórios Locais</h4>
-              <p class="text-xs text-gray-400">Arraste e solte arquivos <code>.xml</code> (JUnit/Robot) ou <code>.json</code> (Playwright/Cypress) em qualquer lugar da tela.</p>
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-blue-300 group-hover:text-blue-100 transition-colors flex items-center gap-1">
+                  Carregar Relatórios Locais
+                  <span class="material-symbols-outlined text-[15px]">file_open</span>
+                </h4>
+                <span class="px-2 py-0.5 rounded bg-blue-800/50 text-[10px] text-blue-200 font-semibold border border-blue-600/50 group-hover:bg-blue-700/60 transition-colors">
+                  Clique para selecionar arquivo
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 group-hover:text-gray-300 transition-colors mt-0.5">
+                Clique aqui para selecionar um arquivo <code>.xml</code> (JUnit/Robot) ou <code>.json</code> (Playwright/Cypress) no seu computador.
+              </p>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -174,66 +184,78 @@
           </div>
         </div>
 
-        <!-- 1. Grid dos 6 Top KPIs Executivos -->
+        <!-- 1. Grid dos 6 Top KPIs Executivos com Navegação e Filtro Interativo -->
         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-          <!-- Total de Testes -->
-          <div class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between">
+          <!-- Total de Testes (Navega para Execuções - Todos) -->
+          <div onclick="navigateToExecutions('all')" class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer hover:border-gray-400 active:scale-95 transition-all group" title="Ver todos os testes nas Execuções">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold">TOTAL DE TESTES</span>
-              <div class="w-7 h-7 rounded bg-[#18191e] flex items-center justify-center text-gray-300 border border-[#282a30]">
+              <span class="text-[11px] uppercase tracking-wider text-gray-400 group-hover:text-white font-semibold flex items-center gap-1">
+                TOTAL DE TESTES
+                <span class="material-symbols-outlined text-[13px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+              </span>
+              <div class="w-7 h-7 rounded bg-[#18191e] flex items-center justify-center text-gray-300 border border-[#282a30] group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-[16px]">dataset</span>
               </div>
             </div>
             <div class="mt-4">
               <span id="kpi-total-tests" class="text-3xl font-semibold tracking-tight text-white" data-count="134">134</span>
-              <p class="text-[11px] text-gray-500 mt-1 truncate">Testes registrados na suíte</p>
+              <p class="text-[11px] text-gray-500 mt-1 truncate group-hover:text-gray-300">Clique para ver todos</p>
             </div>
-            <div class="h-[2px] bg-[#23252b] rounded-b-xl mt-3"></div>
+            <div class="h-[2px] bg-[#23252b] group-hover:bg-gray-400 rounded-b-xl mt-3 transition-colors"></div>
           </div>
 
-          <!-- Aprovados -->
-          <div class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between">
+          <!-- Aprovados (Navega para Execuções - Filtro Passed) -->
+          <div onclick="navigateToExecutions('passed')" class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer hover:border-blue-400 active:scale-95 transition-all group" title="Filtrar testes Aprovados nas Execuções">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] uppercase tracking-wider text-blue-400 font-semibold">APROVADOS</span>
-              <div class="w-7 h-7 rounded bg-blue-950/60 flex items-center justify-center text-blue-400 border border-blue-800/60 shadow-[0_0_8px_rgba(37,99,235,0.3)]">
+              <span class="text-[11px] uppercase tracking-wider text-blue-400 font-semibold flex items-center gap-1">
+                APROVADOS
+                <span class="material-symbols-outlined text-[13px] opacity-0 group-hover:opacity-100 transition-opacity">filter_alt</span>
+              </span>
+              <div class="w-7 h-7 rounded bg-blue-950/60 flex items-center justify-center text-blue-400 border border-blue-800/60 shadow-[0_0_8px_rgba(37,99,235,0.3)] group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-[16px]">done_all</span>
               </div>
             </div>
             <div class="mt-4">
               <span id="kpi-passed-tests" class="text-3xl font-semibold tracking-tight text-blue-400" data-count="107">107</span>
-              <p class="text-[11px] text-gray-400 mt-1 truncate">79.9% em conformidade</p>
+              <p class="text-[11px] text-gray-400 mt-1 truncate group-hover:text-blue-300">Clique para filtrar aprovados</p>
             </div>
             <div class="h-[2px] bg-blue-600 rounded-b-xl mt-3 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
           </div>
 
-          <!-- Falhas -->
-          <div class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between">
+          <!-- Falhas (Navega para Execuções - Filtro Failed) -->
+          <div onclick="navigateToExecutions('failed')" class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer hover:border-red-400 active:scale-95 transition-all group" title="Filtrar testes com Falha nas Execuções">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] uppercase tracking-wider text-red-400 font-semibold">FALHAS</span>
-              <div class="w-7 h-7 rounded bg-[#450a0a]/70 flex items-center justify-center text-red-400 border border-[#7f1d1d]/60 glow-burgundy-pulse">
+              <span class="text-[11px] uppercase tracking-wider text-red-400 font-semibold flex items-center gap-1">
+                FALHAS
+                <span class="material-symbols-outlined text-[13px] opacity-0 group-hover:opacity-100 transition-opacity">filter_alt</span>
+              </span>
+              <div class="w-7 h-7 rounded bg-[#450a0a]/70 flex items-center justify-center text-red-400 border border-[#7f1d1d]/60 glow-burgundy-pulse group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-[16px]">close</span>
               </div>
             </div>
             <div class="mt-4">
               <span id="kpi-failed-tests" class="text-3xl font-semibold tracking-tight text-red-400" data-count="25">25</span>
-              <p class="text-[11px] text-red-300/80 mt-1 truncate">Requerem triagem & fix</p>
+              <p class="text-[11px] text-red-300/80 mt-1 truncate group-hover:text-red-300">Clique para filtrar falhas</p>
             </div>
             <div class="h-[2px] bg-red-700 rounded-b-xl mt-3 shadow-[0_0_8px_rgba(185,28,28,0.6)]"></div>
           </div>
 
-          <!-- Ignorados -->
-          <div class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between">
+          <!-- Ignorados (Navega para Execuções - Filtro Skipped) -->
+          <div onclick="navigateToExecutions('skipped')" class="card-executive p-4 rounded-xl shadow-lg flex flex-col justify-between cursor-pointer hover:border-gray-400 active:scale-95 transition-all group" title="Filtrar testes Ignorados nas Execuções">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] uppercase tracking-wider text-gray-400 font-semibold">IGNORADOS</span>
-              <div class="w-7 h-7 rounded bg-[#18191e] flex items-center justify-center text-gray-400 border border-[#282a30]">
+              <span class="text-[11px] uppercase tracking-wider text-gray-400 group-hover:text-white font-semibold flex items-center gap-1">
+                IGNORADOS
+                <span class="material-symbols-outlined text-[13px] opacity-0 group-hover:opacity-100 transition-opacity">filter_alt</span>
+              </span>
+              <div class="w-7 h-7 rounded bg-[#18191e] flex items-center justify-center text-gray-400 border border-[#282a30] group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-[16px]">block</span>
               </div>
             </div>
             <div class="mt-4">
               <span id="kpi-skipped-tests" class="text-3xl font-semibold tracking-tight text-gray-300" data-count="2">2</span>
-              <p class="text-[11px] text-gray-500 mt-1 truncate">Pulações ou pendências</p>
+              <p class="text-[11px] text-gray-500 mt-1 truncate group-hover:text-gray-300">Clique para filtrar ignorados</p>
             </div>
-            <div class="h-[2px] bg-[#23252b] rounded-b-xl mt-3"></div>
+            <div class="h-[2px] bg-[#23252b] group-hover:bg-gray-400 rounded-b-xl mt-3 transition-colors"></div>
           </div>
 
           <!-- Taxa de Sucesso -->
@@ -270,26 +292,33 @@
           </div>
         </div>
 
-        <!-- 2. Workspace Central: Donut Breakdown + Performance por Módulo -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <!-- Donut Breakdown (4 Cols) -->
-          <div class="card-executive lg:col-span-4 p-6 rounded-xl shadow-lg flex flex-col">
-            <div class="flex items-center gap-3 pb-4 border-b border-[#23252b]">
-              <div class="w-8 h-8 rounded-lg bg-[#18191e] flex items-center justify-center text-gray-300 border border-[#282a30]">
-                <span class="material-symbols-outlined text-[18px]">pie_chart</span>
+        <!-- 2. Workspace Central: Donut Breakdown + Performance por Módulo Alinhados com Scroll Invisível -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          <!-- Donut Breakdown (4 Cols) - Altura Fixa Alinhada -->
+          <div class="card-executive lg:col-span-4 p-6 rounded-xl shadow-lg flex flex-col justify-between h-[560px]">
+            <div class="flex items-center justify-between pb-3 border-b border-[#23252b] shrink-0">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-[#18191e] flex items-center justify-center text-gray-300 border border-[#282a30]">
+                  <span class="material-symbols-outlined text-[18px]">pie_chart</span>
+                </div>
+                <div>
+                  <h3 class="text-sm font-semibold text-white">Distribuição dos Resultados</h3>
+                  <p class="text-[11px] text-gray-500">Clique nos arcos ou legendas para selecionar</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-sm font-semibold text-white">Distribuição dos Resultados</h3>
-                <p class="text-xs text-gray-500">Proporção global de aprovações e falhas</p>
-              </div>
+              <button onclick="resetDonutSelection()" class="text-[11px] text-gray-400 hover:text-white px-2 py-1 rounded bg-[#18191e] border border-[#282a30] transition-colors" title="Limpar seleção do gráfico">
+                Reset
+              </button>
             </div>
 
-            <!-- Gráfico Donut SVG Reativo -->
-            <div class="relative py-8 flex items-center justify-center group/chart cursor-pointer">
+            <!-- Gráfico Donut SVG Reativo e Clicável -->
+            <div class="relative py-4 flex items-center justify-center group/chart cursor-pointer shrink-0">
               <svg class="w-48 h-48 -rotate-90 transform drop-shadow-md" viewBox="0 0 160 160">
                 <circle class="text-[#202126] opacity-80" cx="80" cy="80" fill="none" r="64" stroke="currentColor" stroke-width="14"></circle>
-                <circle class="donut-segment cursor-pointer" cx="80" cy="80" fill="none" id="donut-arc-fail" r="64" stroke="#991b1b" stroke-dasharray="88 402" stroke-dashoffset="402" stroke-linecap="round" stroke-width="14"></circle>
-                <circle class="donut-segment cursor-pointer" cx="80" cy="80" fill="none" id="donut-arc-success" r="64" stroke="#2563eb" stroke-dasharray="314 402" stroke-dashoffset="402" stroke-linecap="round" stroke-width="14"></circle>
+                <!-- Segmento Falhas -->
+                <circle class="donut-segment cursor-pointer" cx="80" cy="80" fill="none" id="donut-arc-fail" r="64" stroke="#991b1b" stroke-dasharray="88 402" stroke-dashoffset="402" stroke-linecap="round" stroke-width="14" onclick="selectDonutCategory('fail')" title="Clique para selecionar Falhas"></circle>
+                <!-- Segmento Aprovados -->
+                <circle class="donut-segment cursor-pointer" cx="80" cy="80" fill="none" id="donut-arc-success" r="64" stroke="#2563eb" stroke-dasharray="314 402" stroke-dashoffset="402" stroke-linecap="round" stroke-width="14" onclick="selectDonutCategory('success')" title="Clique para selecionar Aprovados"></circle>
               </svg>
               <!-- Label Central com Animação -->
               <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-transform duration-300 group-hover/chart:scale-105">
@@ -300,42 +329,47 @@
               </div>
             </div>
 
-            <!-- Lista de Legendas Formatadas -->
-            <div class="flex flex-col gap-2 pt-2">
-              <div class="flex items-center justify-between p-2 rounded-lg bg-[#18191e]/80 border border-[#23252b]">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#2563eb]"></span>
-                  <span class="text-xs text-white">Aprovados</span>
+            <!-- Lista de Legendas Formatadas e Selecionáveis com Efeito Visual -->
+            <div class="flex flex-col gap-2 shrink-0">
+              <!-- Aprovados -->
+              <div id="donut-legend-success" onclick="selectDonutCategory('success')" class="donut-legend-row flex items-center justify-between p-2.5 rounded-lg bg-[#18191e]/80 border border-[#23252b] hover:bg-[#202228] transition-all">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-3 h-3 rounded-full bg-[#2563eb] shadow-[0_0_8px_rgba(37,99,235,0.7)]"></span>
+                  <span class="text-xs text-white font-medium">Aprovados</span>
                 </div>
-                <div class="flex items-baseline gap-1 text-xs">
-                  <span class="font-semibold text-blue-400">107</span>
-                  <span class="text-gray-500">(79.9%)</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-[#18191e]/80 border border-[#23252b]">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#991b1b]"></span>
-                  <span class="text-xs text-white">Falhas</span>
-                </div>
-                <div class="flex items-baseline gap-1 text-xs">
-                  <span class="font-semibold text-red-400">25</span>
-                  <span class="text-gray-500">(18.6%)</span>
+                <div class="flex items-baseline gap-1.5 text-xs">
+                  <span class="font-bold text-blue-400 text-sm">107</span>
+                  <span class="text-gray-400 text-[11px]">(79.9%)</span>
                 </div>
               </div>
-              <div class="flex items-center justify-between p-2 rounded-lg bg-[#18191e]/80 border border-[#23252b]">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#4b5563]"></span>
-                  <span class="text-xs text-gray-400">Ignorados</span>
+
+              <!-- Falhas -->
+              <div id="donut-legend-fail" onclick="selectDonutCategory('fail')" class="donut-legend-row flex items-center justify-between p-2.5 rounded-lg bg-[#18191e]/80 border border-[#23252b] hover:bg-[#202228] transition-all">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-3 h-3 rounded-full bg-[#991b1b] shadow-[0_0_8px_rgba(153,27,27,0.7)]"></span>
+                  <span class="text-xs text-white font-medium">Falhas</span>
                 </div>
-                <div class="flex items-baseline gap-1 text-xs">
-                  <span class="font-semibold text-gray-400">2</span>
-                  <span class="text-gray-500">(1.5%)</span>
+                <div class="flex items-baseline gap-1.5 text-xs">
+                  <span class="font-bold text-red-400 text-sm">25</span>
+                  <span class="text-gray-400 text-[11px]">(18.6%)</span>
+                </div>
+              </div>
+
+              <!-- Ignorados -->
+              <div id="donut-legend-skipped" onclick="selectDonutCategory('skipped')" class="donut-legend-row flex items-center justify-between p-2.5 rounded-lg bg-[#18191e]/80 border border-[#23252b] hover:bg-[#202228] transition-all">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-3 h-3 rounded-full bg-[#4b5563]"></span>
+                  <span class="text-xs text-gray-300 font-medium">Ignorados</span>
+                </div>
+                <div class="flex items-baseline gap-1.5 text-xs">
+                  <span class="font-bold text-gray-300 text-sm">2</span>
+                  <span class="text-gray-400 text-[11px]">(1.5%)</span>
                 </div>
               </div>
             </div>
 
             <!-- Banner de SLA Aceito -->
-            <div class="mt-4 p-3 rounded-lg bg-[#18191e]/60 flex items-center justify-between text-xs border border-[#23252b]">
+            <div class="p-3 rounded-lg bg-[#18191e]/60 flex items-center justify-between text-xs border border-[#23252b] shrink-0 mt-2">
               <span class="flex items-center gap-1.5 text-gray-400">
                 <span class="material-symbols-outlined text-[15px] text-blue-400">verified</span> SLA Aceito: &gt; 75.0%
               </span>
@@ -343,9 +377,9 @@
             </div>
           </div>
 
-          <!-- Desempenho por Módulo (8 Cols) -->
-          <div class="card-executive lg:col-span-8 p-6 rounded-xl shadow-lg flex flex-col">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#23252b]">
+          <!-- Desempenho por Módulo (8 Cols) - Mesma Altura (560px) com Scroll Invisível -->
+          <div class="card-executive lg:col-span-8 p-6 rounded-xl shadow-lg flex flex-col h-[560px]">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#23252b] shrink-0">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-[#18191e] flex items-center justify-center text-gray-300 border border-[#282a30]">
                   <span class="material-symbols-outlined text-[18px]">equalizer</span>
@@ -360,12 +394,12 @@
                   <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-[#2563eb] opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-[#3b82f6]"></span>
                 </span>
-                <span class="font-medium text-white">9 Módulos Auditados</span>
+                <span class="font-medium text-white">9 Módulos Auditados (Scroll Ativo)</span>
               </div>
             </div>
 
-            <!-- Lista de Módulos Injetada Dinamicamente -->
-            <div class="flex flex-col gap-3.5 divide-y divide-[#23252b] pt-3" id="modules-container">
+            <!-- Lista de Módulos Injetada Dinamicamente com Scroll Invisível Elegante -->
+            <div class="flex flex-col gap-3.5 divide-y divide-[#23252b] pt-3 overflow-y-auto flex-1 pr-2 scrollbar-none" id="modules-container">
               <!-- Preenchido via app.js -->
             </div>
           </div>
@@ -433,15 +467,40 @@
         <div class="card-executive p-6 rounded-xl flex flex-col gap-4">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <h2 class="text-lg font-bold text-white tracking-tight">Execuções e Resultados Detalhados</h2>
-              <p class="text-xs text-gray-400">Tabela de alta precisão com busca rápida, steps e status de cada caso de teste.</p>
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-bold text-white tracking-tight">Execuções e Resultados Detalhados</h2>
+                <span id="executions-visible-badge" class="px-2 py-0.5 rounded-full bg-blue-950/60 text-blue-400 border border-blue-800/60 text-[11px] font-semibold">
+                  <span id="executions-visible-counter">134</span> testes visíveis
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Tabela de alta precisão com busca rápida, steps e status de cada caso de teste.</p>
             </div>
             <!-- Barra de Busca -->
             <div class="relative w-full max-w-md">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
-              <input id="qa-quick-search" oninput="filterTable(this.value)" type="text" placeholder="Buscar por teste, módulo ou status... [/]" class="w-full h-9 pl-9 pr-8 bg-[#18191e] border border-[#2d2f36] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
+              <input id="qa-quick-search" oninput="handleSearchInput(this.value)" type="text" placeholder="Buscar por teste, módulo ou status... [/]" class="w-full h-9 pl-9 pr-8 bg-[#18191e] border border-[#2d2f36] rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" />
               <span class="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-[#23252b] text-gray-400 text-[10px] font-mono">/</span>
             </div>
+          </div>
+
+          <!-- Filtros Rápidos por Status (Pills Interativas) -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 border-t border-[#23252b]/60">
+            <span class="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mr-1">Filtrar:</span>
+            <button onclick="setStatusFilter('all')" data-status="all" class="qa-status-pill px-3 py-1 rounded-lg bg-blue-600 text-white text-xs font-medium border border-blue-500 transition-all active:scale-95">
+              Todos
+            </button>
+            <button onclick="setStatusFilter('passed')" data-status="passed" class="qa-status-pill px-3 py-1 rounded-lg bg-[#18191e] text-gray-400 hover:text-white text-xs font-medium border border-[#282a30] transition-all active:scale-95 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span> Aprovados
+            </button>
+            <button onclick="setStatusFilter('failed')" data-status="failed" class="qa-status-pill px-3 py-1 rounded-lg bg-[#18191e] text-gray-400 hover:text-[#fca5a5] text-xs font-medium border border-[#282a30] transition-all active:scale-95 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span> Falhas
+            </button>
+            <button onclick="setStatusFilter('skipped')" data-status="skipped" class="qa-status-pill px-3 py-1 rounded-lg bg-[#18191e] text-gray-400 hover:text-white text-xs font-medium border border-[#282a30] transition-all active:scale-95 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-gray-500"></span> Ignorados
+            </button>
+            <button onclick="setStatusFilter('video')" data-status="video" class="qa-status-pill px-3 py-1 rounded-lg bg-[#18191e] text-gray-400 hover:text-white text-xs font-medium border border-[#282a30] transition-all active:scale-95 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">videocam</span> Com Vídeo
+            </button>
           </div>
 
           <!-- Tabela de Testes -->
@@ -746,16 +805,7 @@
 
     // Filtro da tabela de execuções
     function filterTable(val) {
-      const q = val.toLowerCase().trim();
-      document.querySelectorAll('.qa-test-row').forEach(row => {
-        const name = row.getAttribute('data-test-name') || '';
-        const module = (row.getAttribute('data-module') || '').toLowerCase();
-        if (!q || name.includes(q) || module.includes(q)) {
-          row.classList.remove('hidden');
-        } else {
-          row.classList.add('hidden');
-        }
-      });
+      handleSearchInput(val);
     }
   </script>
 </body>

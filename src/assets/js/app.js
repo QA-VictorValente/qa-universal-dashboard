@@ -308,6 +308,221 @@ function updateDonutArc() {
   }, 150);
 }
 
+// ============================================================
+// SELEÇÃO INTERATIVA DO GRÁFICO DONUT E LEGENDA
+// ============================================================
+window.universalQaState.selectedDonutCategory = null;
+
+function selectDonutCategory(category) {
+  const failArc = document.getElementById('donut-arc-fail');
+  const successArc = document.getElementById('donut-arc-success');
+  const centerValue = document.getElementById('donut-center-value');
+  const centerCaption = document.getElementById('donut-center-caption');
+
+  const legendSuccess = document.getElementById('donut-legend-success');
+  const legendFail = document.getElementById('donut-legend-fail');
+  const legendSkipped = document.getElementById('donut-legend-skipped');
+
+  const data = window.universalQaState.suiteData || DEFAULT_DEMO_DATA;
+  const total = data.summary.total || 1;
+  const passed = data.summary.passed || 0;
+  const failed = data.summary.failed || 0;
+  const skipped = data.summary.skipped || 0;
+
+  // Toggle: se clicar no que já está selecionado, desseleciona
+  if (window.universalQaState.selectedDonutCategory === category) {
+    window.universalQaState.selectedDonutCategory = null;
+    resetDonutSelection();
+    return;
+  }
+
+  window.universalQaState.selectedDonutCategory = category;
+
+  // Limpa classes anteriores de seleção em todos os itens
+  [legendSuccess, legendFail, legendSkipped].forEach(el => {
+    if (el) {
+      el.classList.remove('donut-legend-selected', 'border-blue-500', 'border-red-500', 'border-gray-400', 'bg-blue-900/40', 'bg-red-900/40', 'bg-gray-800/60', 'opacity-35', 'scale-[1.02]');
+    }
+  });
+
+  if (category === 'success') {
+    // 1. Destaca o arco azul
+    if (successArc) {
+      successArc.style.strokeWidth = '18';
+      successArc.style.filter = 'drop-shadow(0 0 12px rgba(37,99,235,0.9))';
+      successArc.style.opacity = '1';
+    }
+    if (failArc) {
+      failArc.style.strokeWidth = '12';
+      failArc.style.filter = 'none';
+      failArc.style.opacity = '0.25';
+    }
+
+    // 2. Destaca o card Aprovados na legenda
+    if (legendSuccess) {
+      legendSuccess.classList.add('donut-legend-selected', 'border-blue-500', 'bg-blue-900/40', 'scale-[1.02]');
+    }
+    if (legendFail) legendFail.classList.add('opacity-35');
+    if (legendSkipped) legendSkipped.classList.add('opacity-35');
+
+    // 3. Atualiza texto central do Donut
+    if (centerValue) centerValue.textContent = `${((passed / total) * 100).toFixed(1)}`;
+    if (centerCaption) {
+      centerCaption.textContent = 'APROVADOS';
+      centerCaption.className = 'text-[11px] uppercase tracking-widest text-blue-400 font-bold mt-1 transition-all';
+    }
+  } else if (category === 'fail') {
+    // 1. Destaca o arco vermelho
+    if (failArc) {
+      failArc.style.strokeWidth = '18';
+      failArc.style.filter = 'drop-shadow(0 0 12px rgba(239,68,68,0.9))';
+      failArc.style.opacity = '1';
+    }
+    if (successArc) {
+      successArc.style.strokeWidth = '12';
+      successArc.style.filter = 'none';
+      successArc.style.opacity = '0.25';
+    }
+
+    // 2. Destaca o card Falhas na legenda
+    if (legendFail) {
+      legendFail.classList.add('donut-legend-selected', 'border-red-500', 'bg-red-900/40', 'scale-[1.02]');
+    }
+    if (legendSuccess) legendSuccess.classList.add('opacity-35');
+    if (legendSkipped) legendSkipped.classList.add('opacity-35');
+
+    // 3. Atualiza texto central do Donut
+    if (centerValue) centerValue.textContent = `${((failed / total) * 100).toFixed(1)}`;
+    if (centerCaption) {
+      centerCaption.textContent = 'FALHAS';
+      centerCaption.className = 'text-[11px] uppercase tracking-widest text-red-400 font-bold mt-1 transition-all';
+    }
+  } else if (category === 'skipped') {
+    if (failArc) {
+      failArc.style.strokeWidth = '12';
+      failArc.style.opacity = '0.25';
+    }
+    if (successArc) {
+      successArc.style.strokeWidth = '12';
+      successArc.style.opacity = '0.25';
+    }
+
+    if (legendSkipped) {
+      legendSkipped.classList.add('donut-legend-selected', 'border-gray-400', 'bg-gray-800/60', 'scale-[1.02]');
+    }
+    if (legendSuccess) legendSuccess.classList.add('opacity-35');
+    if (legendFail) legendFail.classList.add('opacity-35');
+
+    if (centerValue) centerValue.textContent = `${((skipped / total) * 100).toFixed(1)}`;
+    if (centerCaption) {
+      centerCaption.textContent = 'IGNORADOS';
+      centerCaption.className = 'text-[11px] uppercase tracking-widest text-gray-400 font-bold mt-1 transition-all';
+    }
+  }
+}
+
+function resetDonutSelection() {
+  window.universalQaState.selectedDonutCategory = null;
+
+  const failArc = document.getElementById('donut-arc-fail');
+  const successArc = document.getElementById('donut-arc-success');
+  const centerValue = document.getElementById('donut-center-value');
+  const centerCaption = document.getElementById('donut-center-caption');
+
+  const legendSuccess = document.getElementById('donut-legend-success');
+  const legendFail = document.getElementById('donut-legend-fail');
+  const legendSkipped = document.getElementById('donut-legend-skipped');
+
+  const data = window.universalQaState.suiteData || DEFAULT_DEMO_DATA;
+
+  if (failArc) {
+    failArc.style.strokeWidth = '14';
+    failArc.style.filter = 'none';
+    failArc.style.opacity = '1';
+  }
+  if (successArc) {
+    successArc.style.strokeWidth = '14';
+    successArc.style.filter = 'none';
+    successArc.style.opacity = '1';
+  }
+
+  if (centerValue) centerValue.textContent = data.summary.passRate.toFixed(1);
+  if (centerCaption) {
+    centerCaption.textContent = 'APROVADOS';
+    centerCaption.className = 'text-[10px] uppercase tracking-widest text-blue-400 font-semibold mt-1 transition-all';
+  }
+
+  [legendSuccess, legendFail, legendSkipped].forEach(el => {
+    if (el) {
+      el.classList.remove('donut-legend-selected', 'border-blue-500', 'border-red-500', 'border-gray-400', 'bg-blue-900/40', 'bg-red-900/40', 'bg-gray-800/60', 'opacity-35', 'scale-[1.02]');
+    }
+  });
+}
+
+// ============================================================
+// NAVEGAÇÃO DOS TOP KPIS PARA EXECUÇÕES COM FILTRO
+// ============================================================
+function navigateToExecutions(statusFilter = 'all') {
+  switchView('execucoes-e-resultados');
+  setStatusFilter(statusFilter);
+}
+
+function setStatusFilter(statusFilter) {
+  window.universalQaState.filterStatus = statusFilter;
+
+  // Atualiza botões pills visuais
+  document.querySelectorAll('.qa-status-pill').forEach(pill => {
+    const s = pill.getAttribute('data-status');
+    if (s === statusFilter) {
+      pill.classList.add('bg-blue-600', 'text-white', 'border-blue-500');
+      pill.classList.remove('bg-[#18191e]', 'text-gray-400', 'border-[#282a30]');
+    } else {
+      pill.classList.remove('bg-blue-600', 'text-white', 'border-blue-500');
+      pill.classList.add('bg-[#18191e]', 'text-gray-400', 'border-[#282a30]');
+    }
+  });
+
+  applyQaFilters();
+}
+
+function handleSearchInput(val) {
+  window.universalQaState.searchQuery = val;
+  applyQaFilters();
+}
+
+function applyQaFilters() {
+  const query = (window.universalQaState.searchQuery || '').toLowerCase().trim();
+  const statusFilter = window.universalQaState.filterStatus || 'all';
+
+  let visibleCount = 0;
+  const rows = document.querySelectorAll('.qa-test-row');
+
+  rows.forEach(row => {
+    const name = (row.getAttribute('data-test-name') || '').toLowerCase();
+    const module = (row.getAttribute('data-module') || '').toLowerCase();
+    const status = row.getAttribute('data-status') || '';
+    const hasVideo = row.getAttribute('data-has-video') === 'true';
+
+    let matchSearch = !query || name.includes(query) || module.includes(query);
+    let matchStatus = true;
+
+    if (statusFilter === 'passed') matchStatus = (status === 'passed');
+    else if (statusFilter === 'failed') matchStatus = (status === 'failed');
+    else if (statusFilter === 'skipped') matchStatus = (status === 'skipped');
+    else if (statusFilter === 'video') matchStatus = hasVideo;
+
+    if (matchSearch && matchStatus) {
+      row.classList.remove('hidden');
+      visibleCount++;
+    } else {
+      row.classList.add('hidden');
+    }
+  });
+
+  const counter = document.getElementById('executions-visible-counter');
+  if (counter) counter.textContent = visibleCount;
+}
+
 // Spotlight Mouse Effect
 function initSpotlightCards() {
   const cards = document.querySelectorAll('.card-executive');
@@ -571,6 +786,8 @@ function renderExecutionsTable(tests) {
       </tr>
     `;
   }).join('');
+
+  applyQaFilters();
 }
 
 function renderFailuresList(failedTests) {
