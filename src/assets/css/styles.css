@@ -657,3 +657,56 @@ html.light, body.light {
 .light #video-modal .aspect-video .material-symbols-outlined {
   color: #3b82f6 !important;
 }
+
+/* Accordion de Falhas e Detalhes de Erro no Tema Claro */
+.light #failures-list-container .card-executive {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.light #failures-list-container .failure-header-row:hover {
+  background-color: rgba(241, 245, 249, 0.75) !important;
+}
+
+.light #failures-list-container .failure-header-row.border-\[\#23252b\] {
+  border-color: #e2e8f0 !important;
+}
+
+.light #failures-list-container .failure-details-body {
+  border-top-color: #e2e8f0 !important;
+}
+
+.light #failures-list-container .failure-toggle-btn {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light #failures-list-container .failure-toggle-btn:hover {
+  background-color: #e2e8f0 !important;
+}
+
+.light #failures-list-container pre,
+.light #failures-list-container code {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light #failures-list-container .bg-\[\#0a0a0c\] {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #991b1b !important;
+}
+
+.light #failures-list-container .bg-\[\#141519\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light #failures-list-container .bg-\[\#0e0f12\]\/80 {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+

@@ -812,131 +812,185 @@ function renderFailuresList(failedTests) {
     return;
   }
 
-  // O primeiro é destacado como Hero Card e os demais em lista organizada
-  const hero = failedTests[0];
-  const others = failedTests.slice(1);
-
   let html = `
-    <!-- Hero Diagnostic Card -->
-    <article class="w-full card-executive rounded-xl shadow-md overflow-hidden mb-6 flex flex-col p-6 border border-[#23252b] bg-[#141519]/90">
-      <div class="flex items-start lg:items-center justify-between gap-4 border-b border-[#23252b] pb-4 flex-wrap">
-        <div class="flex items-center gap-3 flex-wrap">
-          <span class="px-2.5 py-1 rounded bg-[#450a0a]/80 text-[#fca5a5] border border-[#7f1d1d]/80 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-            <span class="material-symbols-outlined text-[15px]">cancel</span> FALHA CRÍTICA
-          </span>
-          <h2 class="text-base lg:text-lg font-bold text-white tracking-tight">${escapeHtml(hero.name)}</h2>
-          <span class="px-2.5 py-1 rounded bg-[#1e2025] text-gray-300 border border-[#2d3038] text-xs font-medium">${escapeHtml(hero.module)}</span>
-          <span class="px-2.5 py-1 rounded bg-red-950/60 text-red-300 border border-red-800/50 text-xs font-medium">${escapeHtml(hero.category || 'Timeout / Elemento Indisponível')}</span>
-        </div>
-        <div class="flex items-center gap-3 shrink-0">
-          <div class="flex items-center gap-1.5 text-blue-400 font-semibold text-xs">
-            <span class="material-symbols-outlined text-[16px]">verified</span>
-            <span>${hero.confidence || 94}% Confiança IA</span>
-          </div>
-          <span class="text-gray-600 text-xs">•</span>
-          <span class="font-mono text-xs text-gray-300 font-medium">${escapeHtml(hero.durationFormatted)}</span>
-        </div>
+    <!-- Barra de Controle Superior: Total de Falhas e Ações de Abrir/Fechar -->
+    <div class="flex items-center justify-between gap-4 mb-4 flex-wrap pb-2 border-b border-[#23252b]">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+        <h2 class="text-base lg:text-lg font-bold text-white tracking-tight">Falhas Detectadas (${failedTests.length})</h2>
+        <span class="px-2 py-0.5 rounded text-xs bg-red-950/60 text-red-300 border border-red-800/50 font-medium">Triagem Heurística Ativa</span>
       </div>
-
-      <!-- AI Copilot Diagnostic Panel -->
-      <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-4 bg-[#0e0f12]/80 p-4 rounded-xl border border-[#23252b]">
-        <div class="flex flex-col gap-2 p-3.5 bg-[#141519] rounded-lg border border-[#23252b]">
-          <div class="flex items-center gap-1.5 text-red-400">
-            <span class="material-symbols-outlined text-[18px]">troubleshoot</span>
-            <span class="text-xs font-bold uppercase tracking-wider">Causa Provável</span>
-          </div>
-          <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(hero.aiDiagnostic ? hero.aiDiagnostic.rootCause : (hero.errorDetails ? hero.errorDetails.message : 'Timeout ou seletor inexistente.'))}</p>
-        </div>
-        <div class="flex flex-col gap-2 p-3.5 bg-[#141519] rounded-lg border border-[#23252b]">
-          <div class="flex items-center gap-1.5 text-blue-400">
-            <span class="material-symbols-outlined text-[18px]">build_circle</span>
-            <span class="text-xs font-bold uppercase tracking-wider">Ajuste Recomendado</span>
-          </div>
-          <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(hero.aiDiagnostic ? hero.aiDiagnostic.suggestedFix : 'Adicionar espera explícita ou usar data-testid')}</p>
-        </div>
-        <div class="flex flex-col gap-2 p-3.5 bg-[#141519] rounded-lg border border-[#23252b]">
-          <div class="flex items-center gap-1.5 text-emerald-400">
-            <span class="material-symbols-outlined text-[18px]">videocam</span>
-            <span class="text-xs font-bold uppercase tracking-wider">Evidência</span>
-          </div>
-          <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(hero.aiDiagnostic ? hero.aiDiagnostic.evidenceNote : 'Captura de vídeo gravada.')}</p>
-          <div class="mt-auto pt-2 flex items-center justify-between border-t border-[#23252b]/80">
-            <span class="text-[11px] font-mono text-gray-400">WebM Frame #420</span>
-            <button onclick="openVideoPlayer('${escapeJsString(hero.name)}')" class="px-2.5 py-1 rounded bg-[#1e2025] hover:bg-[#282a32] text-blue-400 hover:text-blue-300 text-xs font-semibold flex items-center gap-1 border border-[#30333d] transition-colors">
-              <span class="material-symbols-outlined text-[14px]">play_arrow</span> Reproduzir
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Playwright Stacktrace Snippet -->
-      <div class="mt-4 rounded-xl bg-[#141519] p-4 flex flex-col gap-2.5 border border-[#23252b]">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 text-red-400 font-bold text-xs uppercase tracking-wider">
-            <span class="material-symbols-outlined text-[18px]">terminal</span>
-            <span>Stacktrace & Runner Exception</span>
-          </div>
-          <button onclick="copyElementText('hero-stacktrace-code')" class="flex items-center gap-1 text-xs text-gray-400 hover:text-white px-2.5 py-1 rounded bg-[#1e2025] hover:bg-[#282a32] border border-[#30333d] transition-colors">
-            <span class="material-symbols-outlined text-[14px]">content_copy</span> Copiar Log
-          </button>
-        </div>
-        <pre class="bg-[#0a0a0c] p-3.5 rounded-lg font-mono text-[11px] leading-relaxed overflow-x-auto text-gray-300 border border-[#23252b] max-h-60 overflow-y-auto"><code id="hero-stacktrace-code">${escapeHtml(hero.errorDetails ? hero.errorDetails.stackTrace : 'Nenhum log gravado')}</code></pre>
-      </div>
-
-      <!-- Action Ribbon -->
-      <div class="mt-4 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[#23252b]">
-        <div class="flex items-center gap-2.5 flex-wrap">
-          <button onclick="copyToClipboard('npx playwright test --grep &quot;${escapeJsString(hero.name)}&quot;')" class="h-9 px-3 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-medium flex items-center gap-1.5 transition-colors">
-            <span class="material-symbols-outlined text-[16px]">terminal</span> Copiar Comando Test
-          </button>
-          <button onclick="showToast('Trace Viewer aberto no navegador local!')" class="h-9 px-3 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-medium flex items-center gap-1.5 transition-colors">
-            <span class="material-symbols-outlined text-[16px]">visibility</span> Playwright Trace
-          </button>
-          <button onclick="showToast('Ticket de incidente criado no Jira: #QA-8492')" class="h-9 px-3 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-medium flex items-center gap-1.5 transition-colors">
-            <span class="material-symbols-outlined text-[16px]">bug_report</span> Criar Issue Jira
-          </button>
-        </div>
-        <button onclick="showToast('Fix sugerido aprovado e enviado para PR!')" class="h-9 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all active:scale-95">
-          <span class="material-symbols-outlined text-[17px]">verified</span> Aprovar Fix Sugerido
+      <div class="flex items-center gap-2">
+        <button onclick="expandAllFailures()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-semibold transition-colors shadow-sm cursor-pointer" title="Expandir todos os detalhes">
+          <span class="material-symbols-outlined text-[16px]">unfold_more</span>
+          <span>Expandir Todos</span>
+        </button>
+        <button onclick="collapseAllFailures()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-semibold transition-colors shadow-sm cursor-pointer" title="Recolher todos os detalhes">
+          <span class="material-symbols-outlined text-[16px]">unfold_less</span>
+          <span>Recolher Todos</span>
         </button>
       </div>
-    </article>
+    </div>
+
+    <!-- Lista de Cards de Falhas Expansíveis (Accordion) -->
+    <div class="flex flex-col gap-4">
+      ${failedTests.map((test, idx) => {
+        const isExpanded = idx === 0;
+        const testSafeId = escapeHtml(test.id || `fail-${idx}`);
+        const confidence = test.confidence || 94;
+        const errMessage = test.errorDetails ? test.errorDetails.message : (test.aiDiagnostic ? test.aiDiagnostic.rootCause : 'Erro não especificado durante a asserção.');
+        const stackTrace = test.errorDetails ? test.errorDetails.stackTrace : null;
+
+        return `
+          <article id="failure-card-${testSafeId}" class="w-full card-executive rounded-xl shadow-md overflow-hidden border border-[#23252b] bg-[#141519]/90 transition-all duration-200">
+            <!-- Cabeçalho Clicável do Accordion -->
+            <div onclick="toggleFailureCard('${testSafeId}')" class="p-4 lg:p-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.03] select-none transition-colors border-b ${isExpanded ? 'border-[#23252b]' : 'border-transparent'} failure-header-row">
+              <div class="flex items-center gap-3 flex-wrap flex-1 min-w-0">
+                <span class="px-2.5 py-1 rounded bg-[#450a0a]/80 text-[#fca5a5] border border-[#7f1d1d]/80 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 shadow-sm">
+                  <span class="material-symbols-outlined text-[15px]">cancel</span> FALHA CRÍTICA
+                </span>
+                <h3 class="text-sm lg:text-base font-bold text-white tracking-tight break-all hover:text-blue-400 transition-colors">${escapeHtml(test.name)}</h3>
+                <span class="px-2.5 py-0.5 rounded bg-[#1e2025] text-gray-300 border border-[#2d3038] text-xs font-medium shrink-0">
+                  ${escapeHtml(test.module || 'Geral')}
+                </span>
+                <span class="px-2.5 py-0.5 rounded bg-red-950/60 text-red-300 border border-red-800/50 text-xs font-medium shrink-0">
+                  ${escapeHtml(test.category || 'Timeout / Elemento Indisponível')}
+                </span>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <div class="hidden sm:flex items-center gap-1 text-blue-400 font-semibold text-xs">
+                  <span class="material-symbols-outlined text-[15px]">verified</span>
+                  <span>${confidence}% IA</span>
+                </div>
+                <span class="hidden sm:inline text-gray-600 text-xs">•</span>
+                <span class="font-mono text-xs text-gray-300 font-medium">${escapeHtml(test.durationFormatted)}</span>
+                <button type="button" class="failure-toggle-btn flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-gray-300 hover:text-white border border-[#30333d] text-xs font-medium transition-colors pointer-events-none">
+                  <span class="toggle-text">${isExpanded ? 'Fechar Detalhes' : 'Abrir Detalhes'}</span>
+                  <span class="material-symbols-outlined text-[18px] transition-transform duration-200 toggle-icon">${isExpanded ? 'expand_less' : 'expand_more'}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Corpo Expansível com Detalhes do Erro -->
+            <div id="failure-body-${testSafeId}" class="failure-details-body ${isExpanded ? '' : 'hidden'} p-5 flex flex-col gap-4">
+              <!-- Mensagem de Erro em Destaque -->
+              <div class="rounded-xl bg-red-950/20 border border-red-900/40 p-4 flex flex-col gap-2">
+                <div class="flex items-center gap-2 text-red-400 font-bold text-xs uppercase tracking-wider">
+                  <span class="material-symbols-outlined text-[18px]">error</span>
+                  <span>Mensagem de Erro</span>
+                </div>
+                <div class="font-mono text-xs text-red-200 leading-relaxed whitespace-pre-wrap break-words bg-[#0a0a0c] p-3.5 rounded-lg border border-red-950/60">
+                  ${escapeHtml(errMessage)}
+                </div>
+              </div>
+
+              <!-- Painel Heurístico de Diagnóstico IA -->
+              ${test.aiDiagnostic ? `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 bg-[#0e0f12]/80 p-4 rounded-xl border border-[#23252b]">
+                  <div class="flex flex-col gap-2 p-3.5 bg-[#141519] rounded-lg border border-[#23252b]">
+                    <div class="flex items-center gap-1.5 text-red-400">
+                      <span class="material-symbols-outlined text-[18px]">troubleshoot</span>
+                      <span class="text-xs font-bold uppercase tracking-wider">Causa Provável</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(test.aiDiagnostic.rootCause || 'Falha de asserção ou timeout no locator')}</p>
+                  </div>
+                  <div class="flex flex-col gap-2 p-3.5 bg-[#141519] rounded-lg border border-[#23252b]">
+                    <div class="flex items-center gap-1.5 text-blue-400">
+                      <span class="material-symbols-outlined text-[18px]">build_circle</span>
+                      <span class="text-xs font-bold uppercase tracking-wider">Ajuste Recomendado</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(test.aiDiagnostic.suggestedFix || 'Adicionar espera explícita ou usar data-testid resiliente')}</p>
+                  </div>
+                  <div class="flex flex-col gap-2 p-3.5 bg-[#141519] rounded-lg border border-[#23252b]">
+                    <div class="flex items-center gap-1.5 text-emerald-400">
+                      <span class="material-symbols-outlined text-[18px]">videocam</span>
+                      <span class="text-xs font-bold uppercase tracking-wider">Evidência</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(test.aiDiagnostic.evidenceNote || 'Captura de vídeo gravada.')}</p>
+                    <div class="mt-auto pt-2 flex items-center justify-between border-t border-[#23252b]/80">
+                      <span class="text-[11px] font-mono text-gray-400">WebM Frame #420</span>
+                      <button onclick="event.stopPropagation(); openVideoPlayer('${escapeJsString(test.name)}')" class="px-2.5 py-1 rounded bg-[#1e2025] hover:bg-[#282a32] text-blue-400 hover:text-blue-300 text-xs font-semibold flex items-center gap-1 border border-[#30333d] transition-colors cursor-pointer">
+                        <span class="material-symbols-outlined text-[14px]">play_arrow</span> Reproduzir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Stacktrace e Log do Runner -->
+              ${stackTrace ? `
+                <div class="rounded-xl bg-[#141519] p-4 flex flex-col gap-2.5 border border-[#23252b]">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-red-400 font-bold text-xs uppercase tracking-wider">
+                      <span class="material-symbols-outlined text-[18px]">terminal</span>
+                      <span>Stacktrace & Runner Exception</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); copyElementText('stacktrace-${testSafeId}')" class="flex items-center gap-1 text-xs text-gray-400 hover:text-white px-2.5 py-1 rounded bg-[#1e2025] hover:bg-[#282a32] border border-[#30333d] transition-colors cursor-pointer">
+                      <span class="material-symbols-outlined text-[14px]">content_copy</span> Copiar Log
+                    </button>
+                  </div>
+                  <pre class="bg-[#0a0a0c] p-3.5 rounded-lg font-mono text-[11px] leading-relaxed overflow-x-auto text-gray-300 border border-[#23252b] max-h-60 overflow-y-auto"><code id="stacktrace-${testSafeId}">${escapeHtml(stackTrace)}</code></pre>
+                </div>
+              ` : ''}
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
   `;
 
-  if (others.length > 0) {
-    html += `
-      <div class="flex items-center justify-between mb-3 px-1 mt-6">
-        <span class="text-sm font-bold text-white tracking-tight">Outras Falhas Pendentes (${others.length})</span>
-        <span class="text-xs text-gray-400">Ordenado por severidade</span>
-      </div>
-      <div class="flex flex-col gap-3">
-        ${others.map(o => `
-          <div class="card-executive p-4 rounded-xl flex items-center justify-between gap-4 border border-[#23252b] hover:border-[#383a44] bg-[#141519]/80 transition-all">
-            <div class="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-              <span class="px-2.5 py-1 rounded bg-red-950/70 border border-red-800/60 text-red-300 text-xs font-bold uppercase tracking-wider shrink-0">
-                FALHA
-              </span>
-              <span class="text-sm font-semibold text-white hover:text-blue-400 cursor-pointer transition-colors truncate max-w-lg" onclick="inspectTestDetails('${o.id}')" title="${escapeHtml(o.name)}">
-                ${escapeHtml(o.name)}
-              </span>
-              <span class="px-2 py-0.5 rounded bg-[#1e2025] text-gray-300 border border-[#2d3038] text-xs shrink-0">
-                ${escapeHtml(o.module)}
-              </span>
-            </div>
-            <div class="flex items-center gap-3 shrink-0">
-              <span class="font-mono text-xs text-gray-400">${escapeHtml(o.durationFormatted)}</span>
-              <button onclick="inspectTestDetails('${o.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a1c22] hover:bg-[#252830] text-gray-300 hover:text-white border border-[#2d3038] text-xs font-medium transition-colors" title="Expandir Diagnóstico">
-                <span class="material-symbols-outlined text-[16px]">visibility</span>
-                <span>Inspecionar</span>
-              </button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+  container.innerHTML = html;
+}
+
+// Funções de Abrir/Fechar Accordion de Falhas
+function toggleFailureCard(testId) {
+  const body = document.getElementById(`failure-body-${testId}`);
+  const card = document.getElementById(`failure-card-${testId}`);
+  if (!body) return;
+
+  const isHidden = body.classList.contains('hidden');
+  const headerRow = card ? card.querySelector('.failure-header-row') : null;
+
+  if (isHidden) {
+    body.classList.remove('hidden');
+    if (headerRow) {
+      headerRow.classList.remove('border-transparent');
+      headerRow.classList.add('border-[#23252b]');
+    }
+  } else {
+    body.classList.add('hidden');
+    if (headerRow) {
+      headerRow.classList.add('border-transparent');
+      headerRow.classList.remove('border-[#23252b]');
+    }
   }
 
-  container.innerHTML = html;
+  if (card) {
+    const btnText = card.querySelector('.toggle-text');
+    const btnIcon = card.querySelector('.toggle-icon');
+    if (btnText) btnText.textContent = isHidden ? 'Fechar Detalhes' : 'Abrir Detalhes';
+    if (btnIcon) btnIcon.textContent = isHidden ? 'expand_less' : 'expand_more';
+  }
+}
+
+function expandAllFailures() {
+  document.querySelectorAll('.failure-details-body').forEach(b => b.classList.remove('hidden'));
+  document.querySelectorAll('.failure-header-row').forEach(h => {
+    h.classList.remove('border-transparent');
+    h.classList.add('border-[#23252b]');
+  });
+  document.querySelectorAll('.failure-toggle-btn .toggle-text').forEach(t => t.textContent = 'Fechar Detalhes');
+  document.querySelectorAll('.failure-toggle-btn .toggle-icon').forEach(i => i.textContent = 'expand_less');
+}
+
+function collapseAllFailures() {
+  document.querySelectorAll('.failure-details-body').forEach(b => b.classList.add('hidden'));
+  document.querySelectorAll('.failure-header-row').forEach(h => {
+    h.classList.add('border-transparent');
+    h.classList.remove('border-[#23252b]');
+  });
+  document.querySelectorAll('.failure-toggle-btn .toggle-text').forEach(t => t.textContent = 'Abrir Detalhes');
+  document.querySelectorAll('.failure-toggle-btn .toggle-icon').forEach(i => i.textContent = 'expand_more');
 }
 
 // Player de Vídeo Modal
