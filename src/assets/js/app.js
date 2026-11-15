@@ -728,7 +728,7 @@ function renderModulesList(modules) {
     if (isCritical) {
       badge = '<span class="text-[#fca5a5] font-semibold text-[10px] bg-[#450a0a]/70 border border-[#7f1d1d]/60 px-1.5 py-0.2 rounded uppercase animate-pulse">Crítico</span>';
     } else if (isAttention) {
-      badge = '<span class="text-[#e2e4e9] font-semibold text-[10px] bg-[#202228] border border-[#353842] px-1.5 py-0.2 rounded uppercase">Atenção</span>';
+      badge = '<span class="badge-attention text-[#e2e4e9] font-semibold text-[10px] bg-[#202228] border border-[#353842] px-1.5 py-0.2 rounded uppercase">Atenção</span>';
     }
 
     return `

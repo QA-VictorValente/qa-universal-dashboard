@@ -578,3 +578,82 @@ html.light, body.light {
 .light .group\/module .text-primary {
   color: #2563eb !important;
 }
+
+/* 13. Correções Específicas de Contraste e Legibilidade no Tema Claro */
+
+/* Botões Azuis Ativos DEVEM MANTER texto BRANCO */
+.light .bg-blue-600,
+.light .bg-blue-600 *,
+.light button.bg-blue-600,
+.light button.bg-blue-600 *,
+.light .bg-blue-500,
+.light .bg-blue-500 *,
+.light .module-filter-pill.bg-blue-600,
+.light .module-filter-pill.bg-blue-600 * {
+  color: #ffffff !important;
+}
+
+/* Badge Atenção / Alerta Amarelo com Alto Contraste */
+.light .badge-attention {
+  background-color: #fef3c7 !important;
+  border: 1px solid #fde68a !important;
+  color: #92400e !important;
+}
+
+/* Badge Risco ALTO na Matriz com Estilo Âmbar Quente */
+.light .badge-risk-high {
+  background-color: #fff7ed !important;
+  border: 1px solid #fed7aa !important;
+  color: #c2410c !important;
+}
+
+/* Mensagens de Erro no Drawer e na aba IA com Vermelho Nítido Legível */
+.light .text-red-200,
+.light .text-red-100,
+.light .text-red-300,
+.light .text-\[\#fca5a5\],
+.light .text-\[\#fecaca\] {
+  color: #991b1b !important;
+}
+
+.light .border-red-900\/30,
+.light .border-red-900\/40,
+.light .border-red-800\/50,
+.light .border-red-800\/60,
+.light .border-red-800\/80 {
+  border-color: #fecaca !important;
+}
+
+/* Bloco de "Sugestão de Correção (IA)" no Drawer e aba IA */
+.light .bg-\[\#111827\]\/70,
+.light .bg-\[\#111827\] {
+  background-color: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.light .text-blue-200,
+.light .text-blue-100 {
+  color: #1e40af !important;
+}
+
+/* Trilha das Barras de Volume na Matriz e Tendências */
+.light .w-full.h-3.rounded-full.bg-\[\#1e2025\],
+.light .w-36.h-2.rounded-full.bg-\[\#1e2025\],
+.light .w-40.h-2.rounded-full.bg-\[\#1e2025\] {
+  background-color: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+/* Player de Vídeo WebM (Preserva tema dark na viewport do vídeo) */
+.light #video-modal .aspect-video,
+.light .video-dark-player {
+  background-color: #090a0d !important;
+  border-color: #23252b !important;
+}
+.light #video-modal .aspect-video *,
+.light .video-dark-player * {
+  color: #f8fafc !important;
+}
+.light #video-modal .aspect-video .material-symbols-outlined {
+  color: #3b82f6 !important;
+}
