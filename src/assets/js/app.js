@@ -763,7 +763,7 @@ function renderExecutionsTable(tests) {
     return `
       <tr class="qa-test-row border-b border-surface-container-high/60 hover:bg-surface-container-high/30 transition-colors" data-test-name="${t.name.toLowerCase()}" data-module="${t.module}" data-status="${t.status}" data-category="${t.category || ''}" data-has-video="${t.evidence ? t.evidence.hasVideo : false}">
         <td class="py-3 px-4">
-          <span class="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${isPassed ? 'bg-secondary-container/40 text-[#86efac] border border-secondary-muted/40' : 'bg-error-container/60 text-[#fca5a5] border border-error-muted/40'}">
+          <span class="badge-status ${isPassed ? 'badge-status-pass bg-secondary-container/40 text-[#86efac] border border-secondary-muted/40' : 'badge-status-fail bg-error-container/60 text-[#fca5a5] border border-error-muted/40'} px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider inline-flex items-center justify-center">
             ${isPassed ? 'PASS' : 'FAIL'}
           </span>
         </td>
@@ -846,7 +846,7 @@ function renderFailuresList(failedTests) {
             <!-- Cabeçalho Clicável do Accordion -->
             <div onclick="toggleFailureCard('${testSafeId}')" class="p-4 lg:p-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.03] select-none transition-colors border-b ${isExpanded ? 'border-[#23252b]' : 'border-transparent'} failure-header-row">
               <div class="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-                <span class="px-2.5 py-1 rounded bg-[#450a0a]/80 text-[#fca5a5] border border-[#7f1d1d]/80 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 shadow-sm">
+                <span class="badge-status badge-status-fail px-2.5 py-1 rounded bg-[#450a0a]/80 text-[#fca5a5] border border-[#7f1d1d]/80 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 shadow-sm">
                   <span class="material-symbols-outlined text-[15px]">cancel</span> FALHA CRÍTICA
                 </span>
                 <h3 class="text-sm lg:text-base font-bold text-white tracking-tight break-all hover:text-blue-400 transition-colors">${escapeHtml(test.name)}</h3>
@@ -1028,7 +1028,7 @@ function inspectTestDetails(testId) {
         <span class="font-mono text-xs font-bold text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2.5 py-1 rounded">
           ${escapeHtml(test.id)}
         </span>
-        <span class="px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider ${isPassed ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/60' : 'bg-red-950/70 text-red-300 border border-red-800/60'}">
+        <span class="badge-status ${isPassed ? 'badge-status-pass bg-emerald-950/70 text-emerald-300 border border-emerald-800/60' : 'badge-status-fail bg-red-950/70 text-red-300 border border-red-800/60'} px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider">
           ${isPassed ? 'PASS' : 'FAIL'}
         </span>
         <span class="px-2.5 py-0.5 rounded bg-[#1e2025] text-gray-400 border border-[#2d3038] text-xs">
@@ -1469,7 +1469,7 @@ function toggleModuleTestsAccordion(moduleName, btn) {
           return `
             <div class="flex items-center justify-between p-1.5 rounded bg-[#16171b] border border-[#23252b] hover:bg-[#1e2025] transition-colors cursor-pointer" onclick="inspectTestDetails('${t.id}')">
               <div class="flex items-center gap-2 truncate pr-2">
-                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold uppercase ${isPass ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}">${isPass ? 'PASS' : 'FAIL'}</span>
+                <span class="badge-status ${isPass ? 'badge-status-pass bg-emerald-950 text-emerald-400' : 'badge-status-fail bg-red-950 text-red-400'} text-[9px] px-1.5 py-0.2 rounded font-bold uppercase">${isPass ? 'PASS' : 'FAIL'}</span>
                 <span class="text-[11px] font-medium text-gray-200 truncate" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</span>
               </div>
               <span class="text-[10px] font-mono text-gray-400 shrink-0">${t.durationFormatted}</span>

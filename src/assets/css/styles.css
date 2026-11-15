@@ -710,3 +710,70 @@ html.light, body.light {
   border-color: #e2e8f0 !important;
 }
 
+/* ============================================================
+   ESTILOS EXECUTIVOS DE STATUS: FAIL & PASS NO TEMA CLARO
+   ============================================================ */
+
+/* Badges de Status (PASS / FAIL) na tabela de Execuções e no sistema todo */
+.light .badge-status-fail,
+.light .badge-fail,
+.light td span.badge-status-fail,
+.light .bg-error-container\/60 {
+  background-color: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.06) !important;
+}
+
+.light .badge-status-pass,
+.light .badge-pass,
+.light td span.badge-status-pass,
+.light .bg-secondary-container\/40 {
+  background-color: #dcfce7 !important;
+  border: 1px solid #86efac !important;
+  color: #15803d !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 2px rgba(22, 163, 74, 0.06) !important;
+}
+
+/* Indicadores de Falha (Nav, Header, Módulos e Cards) no Tema Claro */
+.light nav a[data-path="testes-com-falha"] span.rounded-full,
+.light nav a[data-path="testes-com-falha"] span:last-child {
+  background-color: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+  font-weight: 700 !important;
+}
+
+.light #header-fail-badge {
+  background-color: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+  font-weight: 600 !important;
+}
+
+/* Tags de Falha e Falha Crítica em Cards e Accordions */
+.light .bg-red-950,
+.light .bg-red-950\/70,
+.light .bg-red-950\/80,
+.light .bg-red-950\/60,
+.light .bg-red-950\/50,
+.light .bg-\[\#450a0a\]\/80,
+.light .bg-\[\#450a0a\]\/70,
+.light .bg-\[\#450a0a\]\/50 {
+  background-color: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #b91c1c !important;
+}
+
+.light .bg-emerald-950,
+.light .bg-emerald-950\/70,
+.light .bg-emerald-950\/80,
+.light .bg-emerald-950\/50 {
+  background-color: #dcfce7 !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
+}
+
+
