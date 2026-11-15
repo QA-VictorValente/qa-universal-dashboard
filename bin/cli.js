@@ -1,53 +1,109 @@
 #!/usr/bin/env node
 /**
- * Universal QA Dashboard - CLI & Local Live Server
+ * Universal QA Dashboard - CLI, Runner & Local Live Server
  * Zero dependências externas (usa apenas APIs nativas do Node.js).
  * 
- * Uso:
- *   npx qa-universal-dashboard
- *   node bin/cli.js --results ./test-results --open
- *   node bin/cli.js --build --output ./dist/report.html
+ * Exemplos de Uso:
+ *   npx qa-universal-dashboard --results ./mochawesome.json --framework "Cypress JS" --open
+ *   npx qa-universal-dashboard --run "npx cypress run" --results ./mochawesome.json --open
+ *   npx qa-universal-dashboard --build --results ./test-results --open
  */
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, spawnSync } = require('child_process');
 
 const UniversalParser = require('../src/parsers/universal-parser');
 
 // Parse dos argumentos CLI
 const args = process.argv.slice(2);
-function getArg(flag, defaultValue = null) {
-  const index = args.indexOf(flag);
-  if (index !== -1 && args[index + 1]) {
-    return args[index + 1];
+function getArg(flags, defaultValue = null) {
+  const flagList = Array.isArray(flags) ? flags : [flags];
+  for (const flag of flagList) {
+    const index = args.indexOf(flag);
+    if (index !== -1 && args[index + 1]) {
+      return args[index + 1];
+    }
   }
   return defaultValue;
 }
 
-const hasFlag = (flag) => args.includes(flag);
+const hasFlag = (flags) => {
+  const flagList = Array.isArray(flags) ? flags : [flags];
+  return flagList.some(f => args.includes(f));
+};
 
-const port = parseInt(getArg('--port', '3000'), 10);
-const resultsPath = getArg('--results', null);
-const outputPath = getArg('--output', './dist/index.html');
-const shouldOpen = hasFlag('--open') || hasFlag('-o');
-const isBuild = hasFlag('--build');
-const isDemo = hasFlag('--demo');
+if (hasFlag(['--help', '-h'])) {
+  printHelp();
+  process.exit(0);
+}
+
+const port = parseInt(getArg(['--port', '-p'], '3000'), 10);
+let resultsPath = getArg(['--results', '-r'], null);
+const outputPath = getArg(['--output', '-o'], './dist/index.html');
+const frameworkOverride = getArg(['--framework', '-f'], null);
+const runCommand = getArg(['--run'], null);
+const shouldOpen = hasFlag(['--open', '-O']);
+const isBuild = hasFlag(['--build', '-b']);
+const isDemo = hasFlag(['--demo']);
 
 console.log('\x1b[36m%s\x1b[0m', '════════════════════════════════════════════════════════════════');
 console.log('\x1b[36m%s\x1b[0m', '           UNIVERSAL QA TEST DASHBOARD (v1.0.0)                 ');
 console.log('\x1b[36m%s\x1b[0m', '  Playwright • Cypress • Robot Framework • Selenium • Pytest   ');
 console.log('\x1b[36m%s\x1b[0m', '════════════════════════════════════════════════════════════════\n');
 
+// 0. EXECUÇÃO DE COMANDO DE TESTES (SE ESPECIFICADO VIA --run)
+if (runCommand) {
+  console.log(`\x1b[33m⚡ Executando suíte de testes:\x1b[0m \x1b[1m${runCommand}\x1b[0m\n`);
+  const runResult = spawnSync(runCommand, { shell: true, stdio: 'inherit' });
+  const exitCode = runResult.status !== null ? runResult.status : 0;
+  console.log(`\n\x1b[32m✔ Execução de testes finalizada (Código de saída: ${exitCode})\x1b[0m\n`);
+}
+
+// Auto-descoberta de arquivo de resultados se não foi informado
+if (!resultsPath && !isDemo) {
+  resultsPath = autoDiscoverResults();
+}
+
 // 1. MODO BUILD: GERA ARQUIVO HTML ESTÁTICO ÚNICO (STANDALONE BUNDLE)
 if (isBuild) {
-  generateStaticBundle(resultsPath, outputPath);
+  generateStaticBundle(resultsPath, outputPath, frameworkOverride);
+  if (shouldOpen) {
+    console.log(`\x1b[32m✔ Abrindo dashboard estático no navegador...\x1b[0m`);
+    openBrowser(path.resolve(outputPath));
+  }
   process.exit(0);
 }
 
 // 2. MODO SERVIDOR LOCAL (LIVE-PREVIEW)
 startLocalServer();
+
+function autoDiscoverResults() {
+  const commonPaths = [
+    'mochawesome-report/mochawesome.json',
+    'cypress/reports/mochawesome.json',
+    'cypress/results.json',
+    'playwright-report/results.json',
+    'test-results/results.json',
+    'test-results',
+    'output.xml',
+    'results/output.xml',
+    'report.xml',
+    'test-results.xml',
+    'target/surefire-reports',
+    'test-output/testng-results.xml'
+  ];
+
+  for (const candidate of commonPaths) {
+    const fullPath = path.resolve(process.cwd(), candidate);
+    if (fs.existsSync(fullPath)) {
+      console.log(`\x1b[35m🔍 Arquivo de teste detectado automaticamente:\x1b[0m ${candidate}`);
+      return fullPath;
+    }
+  }
+  return null;
+}
 
 function startLocalServer() {
   const srcDir = path.join(__dirname, '..', 'src');
@@ -55,7 +111,10 @@ function startLocalServer() {
 
   let preloadedData = null;
   if (resultsPath && fs.existsSync(resultsPath)) {
-    preloadedData = loadAndParseFile(resultsPath);
+    preloadedData = loadAndParseFile(resultsPath, frameworkOverride);
+  } else if (frameworkOverride) {
+    // Se for modo demo com framework customizado
+    preloadedData = null;
   }
 
   const mimeTypes = {
@@ -123,6 +182,9 @@ function startLocalServer() {
     if (resultsPath) {
       console.log(`\x1b[33m⚡ Ingerindo resultados de:\x1b[0m ${resultsPath}`);
     }
+    if (frameworkOverride) {
+      console.log(`\x1b[35m🏷️  Framework marcado:\x1b[0m ${frameworkOverride}`);
+    }
     console.log('\x1b[90mPressione Ctrl+C para encerrar o servidor.\x1b[0m\n');
 
     if (shouldOpen) {
@@ -131,7 +193,7 @@ function startLocalServer() {
   });
 }
 
-function loadAndParseFile(targetPath) {
+function loadAndParseFile(targetPath, customFramework = null) {
   const stat = fs.statSync(targetPath);
   let fileToRead = targetPath;
 
@@ -148,10 +210,16 @@ function loadAndParseFile(targetPath) {
   }
 
   const content = fs.readFileSync(fileToRead, 'utf-8');
-  return UniversalParser.detectAndParse(content, path.basename(fileToRead));
+  const parsed = UniversalParser.detectAndParse(content, path.basename(fileToRead));
+
+  if (parsed && parsed.summary && customFramework) {
+    parsed.summary.framework = customFramework;
+    parsed.summary.engine = customFramework;
+  }
+  return parsed;
 }
 
-function generateStaticBundle(sourcePath, outPath) {
+function generateStaticBundle(sourcePath, outPath, customFramework = null) {
   console.log(`\x1b[33m⚡ Gerando relatório HTML estático único em:\x1b[0m ${outPath}`);
 
   const srcDir = path.join(__dirname, '..', 'src');
@@ -168,8 +236,17 @@ function generateStaticBundle(sourcePath, outPath) {
 
   let reportData = null;
   if (sourcePath && fs.existsSync(sourcePath)) {
-    reportData = loadAndParseFile(sourcePath);
+    reportData = loadAndParseFile(sourcePath, customFramework);
   }
+
+  // Se passou framework mas não tem arquivo, ajusta o demo data padrão
+  const frameworkPatch = customFramework ? `
+    if (window.universalQaState && window.universalQaState.suiteData && window.universalQaState.suiteData.summary) {
+      window.universalQaState.suiteData.summary.framework = ${JSON.stringify(customFramework)};
+      const fwBadge = document.getElementById('header-framework-badge');
+      if (fwBadge) fwBadge.textContent = ${JSON.stringify(customFramework)};
+    }
+  ` : '';
 
   // Embutir CSS
   let bundle = indexHtml.replace(
@@ -188,6 +265,7 @@ function generateStaticBundle(sourcePath, outPath) {
       ${shaderJs}
       ${appJs}
       ${reportData ? `\nwindow.universalQaState.suiteData = ${JSON.stringify(reportData)};\napplyLoadedReport(window.universalQaState.suiteData, "Build Export");\n` : ''}
+      ${frameworkPatch}
     </script>
   `;
 
@@ -208,9 +286,53 @@ function generateStaticBundle(sourcePath, outPath) {
 
   fs.writeFileSync(outPath, bundle, 'utf-8');
   console.log(`\x1b[32m✔ Relatório estático gerado com sucesso!\x1b[0m Tamanho: ${(fs.statSync(outPath).size / 1024).toFixed(1)} KB`);
+  if (customFramework) {
+    console.log(`\x1b[35m🏷️  Framework marcado no dashboard:\x1b[0m ${customFramework}`);
+  }
 }
 
-function openBrowser(url) {
-  const startCmd = process.platform === 'win32' ? 'start' : (process.platform === 'darwin' ? 'open' : 'xdg-open');
-  exec(`${startCmd} ${url}`);
+function openBrowser(target) {
+  let openUrl = target;
+  if (!target.startsWith('http://') && !target.startsWith('https://')) {
+    openUrl = `"${path.resolve(target)}"`;
+  }
+  const startCmd = process.platform === 'win32' ? 'start ""' : (process.platform === 'darwin' ? 'open' : 'xdg-open');
+  exec(`${startCmd} ${openUrl}`);
 }
+
+function printHelp() {
+  console.log(`
+Uso:
+  qa-universal-dashboard [opções]
+  qa-dashboard [opções]
+
+Opções:
+  -r, --results <caminho>     Arquivo ou pasta de resultados (.json ou .xml)
+  -f, --framework <nome>      Nome do framework/linguagem a ser marcado (ex: "Cypress", "Playwright C#", "Robot Framework")
+  --run "<comando>"           Executa o comando de testes antes de gerar/abrir o dashboard
+  -O, --open                  Abre automaticamente o dashboard no navegador padrão
+  -b, --build                 Gera um arquivo HTML estático único (zero-dependency)
+  -o, --output <caminho>      Caminho de saída do HTML estático (padrão: ./dist/index.html)
+  -p, --port <número>         Porta do servidor local HTTP (padrão: 3000)
+  --demo                      Inicia com dados executivos de demonstração
+  -h, --help                  Exibe este menu de ajuda
+
+Exemplos Práticos:
+
+  1. Executar testes do Cypress e abrir o dashboard automaticamente:
+     npx qa-universal-dashboard --run "npx cypress run" --framework "Cypress" --open
+
+  2. Gerar HTML estático e abrir após rodar Cypress:
+     npx qa-universal-dashboard --build --results mochawesome-report/mochawesome.json --framework "Cypress JS" --open
+
+  3. Rodar com Playwright C# ou TypeScript:
+     npx qa-universal-dashboard --build --results test-results/results.json --framework "Playwright C# .NET 8" --open
+
+  4. Rodar com Robot Framework:
+     npx qa-universal-dashboard --build --results output.xml --framework "Robot Framework Python" --open
+
+  5. Servidor local interativo:
+     npx qa-universal-dashboard --results ./test-results --port 3333 --open
+`);
+}
+
