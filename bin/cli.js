@@ -12,7 +12,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { exec, spawnSync } = require('child_process');
+const { exec, execSync, spawnSync } = require('child_process');
 
 const UniversalParser = require('../src/parsers/universal-parser');
 
@@ -298,10 +298,24 @@ function generateStaticBundle(sourcePath, outPath, customFramework = null) {
 function openBrowser(target) {
   let openUrl = target;
   if (!target.startsWith('http://') && !target.startsWith('https://')) {
-    openUrl = `"${path.resolve(target)}"`;
+    openUrl = path.resolve(target);
   }
-  const startCmd = process.platform === 'win32' ? 'start ""' : (process.platform === 'darwin' ? 'open' : 'xdg-open');
-  exec(`${startCmd} ${openUrl}`);
+  try {
+    if (process.platform === 'win32') {
+      execSync(`explorer.exe "${openUrl}"`, { stdio: 'ignore' });
+    } else if (process.platform === 'darwin') {
+      execSync(`open "${openUrl}"`, { stdio: 'ignore' });
+    } else {
+      execSync(`xdg-open "${openUrl}"`, { stdio: 'ignore' });
+    }
+  } catch (_) {
+    try {
+      const startCmd = process.platform === 'win32' ? 'start ""' : (process.platform === 'darwin' ? 'open' : 'xdg-open');
+      execSync(`${startCmd} "${openUrl}"`, { shell: true, stdio: 'ignore' });
+    } catch (e) {
+      console.warn('Erro ao abrir navegador:', e.message);
+    }
+  }
 }
 
 function printHelp() {
