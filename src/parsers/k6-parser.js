@@ -16,24 +16,42 @@
     const metrics = data.metrics || {};
     const rootGroup = data.root_group || {};
 
+    // Helper para extrair valores tanto no formato direto quanto no formato .values
+    function getVal(metric) {
+      if (!metric) return {};
+      if (metric.values && typeof metric.values === 'object') {
+        return metric.values;
+      }
+      return metric;
+    }
+
     // 1. Extração de Usuários Virtuais (VUs)
-    const vusMax = metrics.vus_max && metrics.vus_max.values ? (metrics.vus_max.values.max || metrics.vus_max.values.value || 0) : 
-                  (metrics.vus && metrics.vus.values ? metrics.vus.values.max || metrics.vus.values.value || 1 : 1);
-    const vusCurrent = metrics.vus && metrics.vus.values ? (metrics.vus.values.value || vusMax) : vusMax;
+    const vusMaxObj = getVal(metrics.vus_max);
+    const vusObj = getVal(metrics.vus);
+    const vusMax = vusMaxObj.max || vusMaxObj.value || vusObj.max || vusObj.value || 1;
+    const vusCurrent = vusObj.value || vusObj.max || vusMax;
 
     // 2. Extração de Requisições HTTP e Iterações
-    const httpReqsCount = metrics.http_reqs && metrics.http_reqs.values ? (metrics.http_reqs.values.count || 0) : 0;
-    const rps = metrics.http_reqs && metrics.http_reqs.values ? (metrics.http_reqs.values.rate || 0) : 0;
-    const iterationsCount = metrics.iterations && metrics.iterations.values ? (metrics.iterations.values.count || 0) : 0;
+    const reqsMetric = getVal(metrics.http_reqs);
+    const httpReqsCount = reqsMetric.count || 0;
+    const rps = reqsMetric.rate || 0;
+
+    const itersMetric = getVal(metrics.iterations);
+    const iterationsCount = itersMetric.count || 0;
 
     // 3. Taxa de Erro HTTP
-    const failedMetric = metrics.http_req_failed && metrics.http_req_failed.values ? metrics.http_req_failed.values : {};
-    const errorRatePct = failedMetric.rate !== undefined ? (failedMetric.rate * 100) : 0;
+    const failedMetric = getVal(metrics.http_req_failed);
+    let errorRatePct = 0;
+    if (failedMetric.rate !== undefined) {
+      errorRatePct = failedMetric.rate * 100;
+    } else if (failedMetric.value !== undefined) {
+      errorRatePct = failedMetric.value * 100;
+    }
     const failedReqs = failedMetric.passes !== undefined ? failedMetric.passes : Math.round(httpReqsCount * (errorRatePct / 100));
-    const passedReqs = httpReqsCount - failedReqs;
+    const passedReqs = Math.max(0, httpReqsCount - failedReqs);
 
     // 4. Latência & Percentis de Duração
-    const durMetric = metrics.http_req_duration && metrics.http_req_duration.values ? metrics.http_req_duration.values : {};
+    const durMetric = getVal(metrics.http_req_duration);
     const latency = {
       avg: durMetric.avg !== undefined ? durMetric.avg.toFixed(1) : '0.0',
       min: durMetric.min !== undefined ? durMetric.min.toFixed(1) : '0.0',
@@ -45,15 +63,22 @@
     };
 
     // 5. Volume de Rede e Conexões
-    const dataReceived = metrics.data_received && metrics.data_received.values ? (metrics.data_received.values.count || 0) : 0;
-    const dataSent = metrics.data_sent && metrics.data_sent.values ? (metrics.data_sent.values.count || 0) : 0;
-    const connectingAvg = metrics.http_req_connecting && metrics.http_req_connecting.values ? (metrics.http_req_connecting.values.avg || 0).toFixed(1) : '0.0';
-    const tlsAvg = metrics.http_req_tls_handshaking && metrics.http_req_tls_handshaking.values ? (metrics.http_req_tls_handshaking.values.avg || 0).toFixed(1) : '0.0';
-    const waitingAvg = metrics.http_req_waiting && metrics.http_req_waiting.values ? (metrics.http_req_waiting.values.avg || 0).toFixed(1) : '0.0';
+    const dataReceived = (getVal(metrics.data_received).count || 0);
+    const dataSent = (getVal(metrics.data_sent).count || 0);
+    const connectingAvg = (getVal(metrics.http_req_connecting).avg || 0).toFixed(1);
+    const tlsAvg = (getVal(metrics.http_req_tls_handshaking).avg || 0).toFixed(1);
+    const waitingAvg = (getVal(metrics.http_req_waiting).avg || 0).toFixed(1);
 
     // 6. Duração Geral do Teste
-    const durationMs = data.state && data.state.testRunDurationMs ? data.state.testRunDurationMs : 60000;
-    const totalSecs = Math.round(durationMs / 1000);
+    let durationMs = 0;
+    if (data.state && data.state.testRunDurationMs) {
+      durationMs = data.state.testRunDurationMs;
+    } else if (reqsMetric.rate && reqsMetric.count) {
+      durationMs = Math.round((reqsMetric.count / reqsMetric.rate) * 1000);
+    } else {
+      durationMs = 40000;
+    }
+    const totalSecs = Math.max(1, Math.round(durationMs / 1000));
     const mins = Math.floor(totalSecs / 60);
     const secs = totalSecs % 60;
     const durationFormatted = mins > 0 ? `${mins}m ${secs.toString().padStart(2, '0')}s` : `${secs}s`;
@@ -64,10 +89,16 @@
 
     Object.keys(metrics).forEach(metricName => {
       const metricObj = metrics[metricName];
-      if (metricObj.thresholds) {
+      if (metricObj && metricObj.thresholds) {
         Object.keys(metricObj.thresholds).forEach(thExpr => {
           const thData = metricObj.thresholds[thExpr];
-          const isOk = thData.ok !== false;
+          // No k6 summary export: o booleano indica se o threshold FALHOU (true = falhou, false = passou)
+          let isOk = true;
+          if (typeof thData === 'boolean') {
+            isOk = !thData;
+          } else if (thData && typeof thData === 'object') {
+            isOk = thData.ok !== false;
+          }
           if (!isOk) slaPassed = false;
           thresholds.push({
             metric: metricName,
@@ -78,40 +109,45 @@
       }
     });
 
-    // 8. Checks Funcionais
+    // 8. Checks Funcionais (Suporta tanto Array quanto Object)
     const checks = [];
     function collectChecks(groupNode, groupName = 'Geral') {
+      if (!groupNode) return;
       const currentName = groupNode.name || groupName;
-      if (groupNode.checks && Array.isArray(groupNode.checks)) {
-        groupNode.checks.forEach(c => {
-          const pass = c.passes || 0;
-          const fail = c.fails || 0;
-          const total = pass + fail;
-          const rate = total > 0 ? ((pass / total) * 100).toFixed(1) : '100.0';
-          checks.push({
-            group: currentName,
-            name: c.name,
-            passes: pass,
-            fails: fail,
-            rate: parseFloat(rate),
-            ok: fail === 0
-          });
+
+      // Checks
+      const rawChecks = groupNode.checks;
+      const checksList = Array.isArray(rawChecks) ? rawChecks : (rawChecks && typeof rawChecks === 'object' ? Object.values(rawChecks) : []);
+      checksList.forEach(c => {
+        const pass = c.passes || 0;
+        const fail = c.fails || 0;
+        const total = pass + fail;
+        const rate = total > 0 ? ((pass / total) * 100).toFixed(1) : '100.0';
+        checks.push({
+          group: currentName,
+          name: c.name,
+          passes: pass,
+          fails: fail,
+          rate: parseFloat(rate),
+          ok: fail === 0
         });
-      }
-      if (groupNode.groups && Array.isArray(groupNode.groups)) {
-        groupNode.groups.forEach(g => collectChecks(g, g.name || currentName));
-      }
+      });
+
+      // Subgrupos
+      const rawGroups = groupNode.groups;
+      const groupsList = Array.isArray(rawGroups) ? rawGroups : (rawGroups && typeof rawGroups === 'object' ? Object.values(rawGroups) : []);
+      groupsList.forEach(g => collectChecks(g, g.name || currentName));
     }
     collectChecks(rootGroup);
 
     // 9. Classificação Heurística do Tipo de Teste
     let testType = 'Teste de Carga (Load Test)';
-    if (vusMax >= 100) {
+    if (vusMax >= 25 || errorRatePct > 10) {
       testType = 'Teste de Estresse (Stress Test)';
-    } else if (vusMax <= 10 && durationMs < 30000) {
+    } else if (vusMax <= 3 && totalSecs <= 15) {
       testType = 'Smoke Test (Validação Rápida)';
     } else if (durationMs > 300000) {
-      testType = 'Soak / Soak Test (Resistência Contínua)';
+      testType = 'Soak Test (Resistência Contínua)';
     }
 
     // 10. Objeto k6 consolidado para renderização
