@@ -15,12 +15,16 @@
     "demo:playwright": "node bin/cli.js --results ./demo-reports/playwright/results.json --open",
     "demo:cypress": "node bin/cli.js --results ./demo-reports/cypress/mochawesome.json --open",
     "demo:robot": "node bin/cli.js --results ./demo-reports/robot/output.xml --open",
-    "demo:selenium": "node bin/cli.js --results ./demo-reports/selenium/testng-results.xml --open"
+    "demo:selenium": "node bin/cli.js --results ./demo-reports/selenium/testng-results.xml --open",
+    "demo:k6": "node bin/cli.js --results ./demo-reports/k6/summary.json --framework \"k6 Performance\" --open"
   },
   "keywords": [
     "qa",
     "dashboard",
     "testing",
+    "k6",
+    "load-testing",
+    "performance-testing",
     "playwright",
     "cypress",
     "robotframework",

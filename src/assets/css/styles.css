@@ -776,4 +776,129 @@ html.light, body.light {
   color: #15803d !important;
 }
 
+/* ============================================================
+   ESTILOS INTERATIVOS: ABA K6 TESTS (PERFORMANCE & CARGA)
+   ============================================================ */
+
+.k6-telemetry-grid {
+  position: relative;
+}
+
+.k6-telemetry-col {
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efeito de foco ao passar o mouse sobre o grid de colunas */
+.k6-telemetry-grid:hover .k6-telemetry-col {
+  opacity: 0.72;
+}
+
+.k6-telemetry-grid:hover .k6-telemetry-col:hover {
+  opacity: 1 !important;
+  transform: translateY(-4px) scale(1.018);
+  border-color: #a855f7 !important;
+  box-shadow: 0 14px 30px -6px rgba(168, 85, 247, 0.3), 0 0 0 1px rgba(168, 85, 247, 0.5) !important;
+  z-index: 10;
+}
+
+/* Coluna Pré-selecionada / Fixada (com ênfase na métrica de latência) */
+.k6-telemetry-col.k6-col-selected {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.45), 0 10px 25px -4px rgba(168, 85, 247, 0.25) !important;
+  background-color: rgba(168, 85, 247, 0.08) !important;
+  opacity: 1 !important;
+}
+
+.k6-telemetry-col.k6-col-selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #a855f7, #38bdf8);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+}
+
+/* Tema Claro para Área de k6 */
+.light #view-k6-tests .card-executive,
+.light #view-k6-tests .bg-\[\#141519\]\/90,
+.light #view-k6-tests .bg-\[\#16131e\]\/95 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light #view-k6-tests .bg-\[\#111216\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light #view-k6-tests .bg-\[\#1e2025\] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+.light #view-k6-tests .bg-\[\#100d16\] {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+}
+
+.light #view-k6-tests h2,
+.light #view-k6-tests h3,
+.light #view-k6-tests strong.text-white,
+.light #view-k6-tests span.text-white {
+  color: #0f172a !important;
+}
+
+.light .k6-telemetry-col.k6-col-selected {
+  background-color: #faf5ff !important;
+  border-color: #9333ea !important;
+  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.35), 0 10px 20px -3px rgba(147, 51, 234, 0.15) !important;
+}
+
+.light .k6-telemetry-grid:hover .k6-telemetry-col:hover {
+  background-color: #faf5ff !important;
+  border-color: #9333ea !important;
+  box-shadow: 0 12px 24px -4px rgba(147, 51, 234, 0.25) !important;
+}
+
+.light #view-k6-tests .bg-purple-950\/80 {
+  background-color: #f3e8ff !important;
+  border-color: #d8b4fe !important;
+  color: #7e22ce !important;
+}
+
+.light #view-k6-tests .bg-purple-900\/60 {
+  background-color: #9333ea !important;
+  border-color: #7e22ce !important;
+  color: #ffffff !important;
+}
+
+.light #view-k6-tests .bg-purple-900\/60:hover {
+  background-color: #7e22ce !important;
+}
+
+.light #view-k6-tests button.bg-\[\#1e2025\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.light #view-k6-tests button.bg-\[\#1e2025\]:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light nav a[data-path="k6-tests"] span.rounded-full {
+  background-color: #f3e8ff !important;
+  border-color: #d8b4fe !important;
+  color: #7e22ce !important;
+}
+
+
 

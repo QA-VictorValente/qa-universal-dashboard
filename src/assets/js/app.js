@@ -673,6 +673,13 @@ function loadReportFile(file) {
 function applyLoadedReport(reportData, sourceName) {
   window.universalQaState.suiteData = reportData;
 
+  // Se o relatório for do k6, renderiza a aba de k6 e navega diretamente para ela
+  if (reportData.k6) {
+    window.universalQaState.k6Data = reportData.k6;
+    renderK6Dashboard(reportData.k6);
+    switchView('k6-tests');
+  }
+
   // Atualiza indicadores do cabeçalho
   const tsEl = document.getElementById('current-timestamp');
   if (tsEl) tsEl.textContent = reportData.summary.timestamp || new Date().toLocaleString();
@@ -1522,3 +1529,414 @@ function filterExecutionsByModule(moduleName) {
     handleSearchInput(moduleName);
   }
 }
+
+// ============================================================
+// MÓDULO DE TESTES DE PERFORMANCE, CARGA & ESTRESSE (k6)
+// ============================================================
+
+const DEFAULT_K6_DATA = {
+  testType: 'Teste de Carga & Estresse (Load/Stress)',
+  fileName: 'k6-summary.json',
+  vusMax: 100,
+  vusCurrent: 100,
+  httpReqsCount: 4822,
+  rps: '80.3',
+  iterationsCount: 2411,
+  errorRatePct: '0.25',
+  failedReqs: 12,
+  passedReqs: 4810,
+  durationFormatted: '1m 00s',
+  slaPassed: true,
+  latency: {
+    avg: '182.4',
+    min: '21.0',
+    med: '145.2',
+    max: '1240.5',
+    p90: '285.3',
+    p95: '392.1',
+    p99: '712.8'
+  },
+  network: {
+    dataReceivedMb: '18.45 MB',
+    dataSentMb: '1.42 MB',
+    connectingAvg: '14.2',
+    tlsAvg: '18.6',
+    waitingAvg: '154.2'
+  },
+  thresholds: [
+    { metric: 'http_req_duration{expected_response:true}', expression: 'p(95) < 500ms', value: '392.1 ms', ok: true },
+    { metric: 'http_req_duration{expected_response:true}', expression: 'p(99) < 1000ms', value: '712.8 ms', ok: true },
+    { metric: 'http_req_failed', expression: 'rate < 0.01 (1%)', value: '0.25%', ok: true },
+    { metric: 'checks', expression: 'rate > 0.95 (95%)', value: '99.5%', ok: true }
+  ],
+  checks: [
+    { group: 'Autenticação & Login', name: 'status is 200 (Login API)', passes: 2411, fails: 0, rate: 100.0, ok: true },
+    { group: 'Autenticação & Login', name: 'token JWT retornado no payload', passes: 2411, fails: 0, rate: 100.0, ok: true },
+    { group: 'Checkout & Pagamento Pix', name: 'status is 200 ou 201 (Criação de Fatura)', passes: 2399, fails: 12, rate: 99.5, ok: true },
+    { group: 'Checkout & Pagamento Pix', name: 'latência gateway PSP < 800ms', passes: 2385, fails: 26, rate: 98.9, ok: true },
+    { group: 'Catálogo & Vitrine', name: 'tempo de resposta vitrine < 300ms', passes: 4822, fails: 0, rate: 100.0, ok: true }
+  ],
+  scenarios: {
+    load: { vus: 100, rps: '80.3', p95: '392.1', errorRate: '0.25', total: 4822 },
+    stress: { vus: 300, rps: '185.7', p95: '780.4', errorRate: '1.82', total: 11142 },
+    smoke: { vus: 10, rps: '12.4', p95: '115.2', errorRate: '0.00', total: 620 }
+  }
+};
+
+function renderK6Dashboard(data) {
+  const container = document.getElementById('k6-dashboard-container');
+  if (!container) return;
+
+  const k6 = data || window.universalQaState.k6Data || DEFAULT_K6_DATA;
+  window.universalQaState.k6Data = k6;
+
+  const isSlaOk = k6.slaPassed !== false;
+  const isSelected = window.universalQaState.k6SelectedCol || 'latency';
+
+  container.innerHTML = `
+    <!-- Top Hero Card com Informações Executivas e Seletor de Cenários -->
+    <div class="card-executive p-6 rounded-xl flex flex-col justify-between border border-[#23252b] bg-[#141519]/90 shadow-lg">
+      <div class="flex items-start lg:items-center justify-between gap-4 border-b border-[#23252b] pb-4 flex-wrap">
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="px-3 py-1 rounded bg-purple-950/80 border border-purple-800/80 text-purple-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-[16px] text-purple-400">speed</span>
+            ${escapeHtml(k6.testType || 'Teste de Carga')}
+          </span>
+          <h2 class="text-base lg:text-lg font-bold text-white tracking-tight">k6 Performance & Observabilidade de Carga</h2>
+          <span class="px-2.5 py-0.5 rounded bg-[#1e2025] text-gray-300 border border-[#2d3038] text-xs font-mono">
+            ${escapeHtml(k6.fileName || 'summary.json')}
+          </span>
+          <span class="text-xs text-gray-400 font-medium hidden sm:inline">
+            Duração: <strong class="text-white">${k6.durationFormatted}</strong>
+          </span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs text-gray-400 font-medium hidden md:inline">Cenários k6:</span>
+          <button onclick="switchK6Scenario('load')" class="px-2.5 py-1 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-xs font-medium border border-[#30333d] text-gray-200 transition-colors">
+            ⚡ Carga (100 VUs)
+          </button>
+          <button onclick="switchK6Scenario('stress')" class="px-2.5 py-1 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-xs font-medium border border-[#30333d] text-gray-200 transition-colors">
+            🔥 Estresse (300 VUs)
+          </button>
+          <button onclick="switchK6Scenario('smoke')" class="px-2.5 py-1 rounded-lg bg-[#1e2025] hover:bg-[#282a32] text-xs font-medium border border-[#30333d] text-gray-200 transition-colors">
+            💨 Smoke (10 VUs)
+          </button>
+          <button onclick="exportK6SummaryJson()" class="flex items-center gap-1 px-3 py-1 rounded-lg bg-purple-900/60 hover:bg-purple-800/70 border border-purple-700/60 text-purple-200 text-xs font-semibold shadow-sm transition-all ml-2">
+            <span class="material-symbols-outlined text-[14px]">download</span>
+            <span>Exportar JSON</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-4 flex items-center justify-between gap-4 flex-wrap text-xs">
+        <div class="flex items-center gap-2">
+          <span class="text-gray-400">Resultado dos Thresholds:</span>
+          ${isSlaOk ? `
+            <span class="px-2.5 py-0.5 rounded bg-emerald-950/70 border border-emerald-800/60 text-emerald-300 font-bold uppercase tracking-wider flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">verified</span> 100% dos Critérios Conformes
+            </span>
+          ` : `
+            <span class="px-2.5 py-0.5 rounded bg-red-950/70 border border-red-800/60 text-red-300 font-bold uppercase tracking-wider flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">warning</span> Violação de SLA Detectada
+            </span>
+          `}
+        </div>
+        <div class="flex items-center gap-4 text-gray-400">
+          <span>Passe o mouse ou clique sobre qualquer coluna abaixo para focar</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AS 4 COLUNAS INTERATIVAS COM EFEITO HOVER E FOCO NA COLUNA MAIS IMPORTANTE -->
+    <div class="k6-telemetry-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+      
+      <!-- Coluna 1: Usuários Virtuais (VUs) -->
+      <div id="k6-col-vus" onclick="selectK6Column('vus')" class="k6-telemetry-col card-executive p-5 rounded-xl border border-[#23252b] bg-[#141519]/90 flex flex-col justify-between ${isSelected === 'vus' ? 'k6-col-selected' : ''}" title="Clique para fixar esta coluna">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-[#23252b]/80">
+            <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider">
+              <span class="material-symbols-outlined text-[18px]">group</span>
+              <span>Usuários Virtuais (VUs)</span>
+            </div>
+            <span class="text-[10px] text-gray-400 font-mono">Concorrência</span>
+          </div>
+          <div class="my-4">
+            <span class="text-3xl font-extrabold text-white font-mono tracking-tight">${k6.vusMax}</span>
+            <span class="text-xs text-gray-400 ml-1">VUs Pico</span>
+          </div>
+          <div class="flex flex-col gap-2 pt-2 border-t border-[#23252b]/60 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Vazão (RPS):</span>
+              <strong class="text-white font-mono font-semibold">${k6.rps} req/s</strong>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Iterações Completas:</span>
+              <span class="text-gray-200 font-mono">${k6.iterationsCount.toLocaleString()}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Status de Rampa:</span>
+              <span class="text-cyan-300 font-medium">100% Estabilizado</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#23252b]/60">
+          <div class="w-full bg-[#1e2025] h-1.5 rounded-full overflow-hidden">
+            <div class="bg-cyan-500 h-1.5 rounded-full" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna 2: Latência & Percentis (A COLUNA MAIS IMPORTANTE - PRÉ-SELECIONADA POR PADRÃO) -->
+      <div id="k6-col-latency" onclick="selectK6Column('latency')" class="k6-telemetry-col card-executive p-5 rounded-xl border border-purple-500/80 bg-[#16131e]/95 flex flex-col justify-between ${isSelected === 'latency' ? 'k6-col-selected' : ''}" title="Clique para fixar esta coluna">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-purple-800/40">
+            <div class="flex items-center gap-2 text-purple-400 font-bold text-xs uppercase tracking-wider">
+              <span class="material-symbols-outlined text-[18px]">timer</span>
+              <span>Latência & Percentis</span>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-purple-900/70 border border-purple-700/60 text-purple-200 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+              Métrica Chave
+            </span>
+          </div>
+          <div class="my-4">
+            <span class="text-[11px] uppercase tracking-wider text-purple-300 font-semibold block">Percentil p(95) SLA:</span>
+            <div class="flex items-baseline gap-1 mt-0.5">
+              <span class="text-3xl font-extrabold text-white font-mono tracking-tight">${k6.latency.p95}</span>
+              <span class="text-xs text-purple-300 font-semibold">ms</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-purple-900/40 text-xs">
+            <div class="p-2 rounded bg-[#100d16] border border-purple-900/30 flex flex-col">
+              <span class="text-[10px] text-gray-400 uppercase">p(99) Cauda</span>
+              <strong class="text-purple-300 font-mono mt-0.5">${k6.latency.p99} ms</strong>
+            </div>
+            <div class="p-2 rounded bg-[#100d16] border border-purple-900/30 flex flex-col">
+              <span class="text-[10px] text-gray-400 uppercase">p(90)</span>
+              <strong class="text-gray-200 font-mono mt-0.5">${k6.latency.p90} ms</strong>
+            </div>
+            <div class="p-2 rounded bg-[#100d16] border border-purple-900/30 flex flex-col">
+              <span class="text-[10px] text-gray-400 uppercase">Mediana</span>
+              <strong class="text-gray-200 font-mono mt-0.5">${k6.latency.med} ms</strong>
+            </div>
+            <div class="p-2 rounded bg-[#100d16] border border-purple-900/30 flex flex-col">
+              <span class="text-[10px] text-gray-400 uppercase">Média</span>
+              <strong class="text-gray-200 font-mono mt-0.5">${k6.latency.avg} ms</strong>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-purple-900/40 flex items-center justify-between text-[11px]">
+          <span class="text-gray-400">Meta: <strong class="text-white">&lt; 500ms</strong></span>
+          <span class="text-emerald-400 font-semibold flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[13px]">check</span> Conforme SLA
+          </span>
+        </div>
+      </div>
+
+      <!-- Coluna 3: Confiabilidade & Taxa de Erro HTTP -->
+      <div id="k6-col-errors" onclick="selectK6Column('errors')" class="k6-telemetry-col card-executive p-5 rounded-xl border border-[#23252b] bg-[#141519]/90 flex flex-col justify-between ${isSelected === 'errors' ? 'k6-col-selected' : ''}" title="Clique para fixar esta coluna">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-[#23252b]/80">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+              <span class="material-symbols-outlined text-[18px]">verified</span>
+              <span>Confiabilidade HTTP</span>
+            </div>
+            <span class="text-[10px] text-gray-400 font-mono">http_req_failed</span>
+          </div>
+          <div class="my-4">
+            <span class="text-3xl font-extrabold ${parseFloat(k6.errorRatePct) > 1 ? 'text-red-400' : 'text-emerald-400'} font-mono tracking-tight">${k6.errorRatePct}%</span>
+            <span class="text-xs text-gray-400 ml-1">Taxa de Erro</span>
+          </div>
+          <div class="flex flex-col gap-2 pt-2 border-t border-[#23252b]/60 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Requisições com Sucesso:</span>
+              <strong class="text-emerald-400 font-mono font-semibold">${k6.passedReqs.toLocaleString()}</strong>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Falhas / Timeouts:</span>
+              <span class="${k6.failedReqs > 0 ? 'text-red-400 font-bold' : 'text-gray-400'} font-mono">${k6.failedReqs}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Total Executado:</span>
+              <span class="text-white font-mono">${k6.httpReqsCount.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#23252b]/60 flex items-center justify-between text-[11px]">
+          <span class="text-gray-400">Tolerância: <strong class="text-white">&lt; 1.0%</strong></span>
+          <span class="text-emerald-400 font-semibold flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[13px]">check</span> Estável
+          </span>
+        </div>
+      </div>
+
+      <!-- Coluna 4: Rede & Handshake -->
+      <div id="k6-col-network" onclick="selectK6Column('network')" class="k6-telemetry-col card-executive p-5 rounded-xl border border-[#23252b] bg-[#141519]/90 flex flex-col justify-between ${isSelected === 'network' ? 'k6-col-selected' : ''}" title="Clique para fixar esta coluna">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-[#23252b]/80">
+            <div class="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wider">
+              <span class="material-symbols-outlined text-[18px]">wifi_tethering</span>
+              <span>Rede & Handshake</span>
+            </div>
+            <span class="text-[10px] text-gray-400 font-mono">Tráfego</span>
+          </div>
+          <div class="my-4">
+            <span class="text-3xl font-extrabold text-white font-mono tracking-tight">${k6.network.dataReceivedMb}</span>
+            <span class="text-xs text-gray-400 ml-1">Recebidos</span>
+          </div>
+          <div class="flex flex-col gap-2 pt-2 border-t border-[#23252b]/60 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">Dados Enviados:</span>
+              <strong class="text-white font-mono">${k6.network.dataSentMb}</strong>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">DNS & Conexão:</span>
+              <span class="text-gray-200 font-mono">${k6.network.connectingAvg} ms</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">TLS Handshake:</span>
+              <span class="text-gray-200 font-mono">${k6.network.tlsAvg} ms</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray-400">TTFB (Waiting):</span>
+              <span class="text-gray-200 font-mono">${k6.network.waitingAvg} ms</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#23252b]/60">
+          <div class="w-full bg-[#1e2025] h-1.5 rounded-full overflow-hidden">
+            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 85%"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEÇÃO DUPLA: THRESHOLDS (SLAS) E CHECKS FUNCIONAIS POR ENDPOINT -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+      
+      <!-- Card de Thresholds do k6 -->
+      <div class="card-executive p-6 rounded-xl border border-[#23252b] bg-[#141519]/90 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-[#23252b] pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-purple-400">gavel</span>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Critérios de Aceite & Thresholds (SLA)</h3>
+            </div>
+            <span class="text-xs text-gray-400 font-mono">${k6.thresholds.length} Regras Auditadas</span>
+          </div>
+          <div class="flex flex-col gap-2.5">
+            ${k6.thresholds.map(th => `
+              <div class="p-3 rounded-lg bg-[#111216] border border-[#23252b] flex items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-2 h-2 rounded-full ${th.ok ? 'bg-emerald-400' : 'bg-red-400'} shrink-0"></span>
+                  <span class="font-mono text-gray-300 truncate" title="${escapeHtml(th.metric)}">${escapeHtml(th.metric)}</span>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                  <span class="font-mono text-purple-300 font-semibold">${escapeHtml(th.expression)}</span>
+                  <span class="px-2 py-0.5 rounded text-[11px] font-bold uppercase ${th.ok ? 'bg-emerald-950/70 border border-emerald-800/60 text-emerald-300' : 'bg-red-950/70 border border-red-800/60 text-red-300'}">
+                    ${th.ok ? 'PASS' : 'FAIL'}
+                  </span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#23252b] text-[11px] text-gray-400 flex items-center justify-between">
+          <span>Critério Corporativo: Latência p95 &lt; 500ms e Erro &lt; 1%</span>
+          <span class="text-emerald-400 font-semibold">100% Homologado</span>
+        </div>
+      </div>
+
+      <!-- Card de Checks & Grupos de Endpoints -->
+      <div class="card-executive p-6 rounded-xl border border-[#23252b] bg-[#141519]/90 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-[#23252b] pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-blue-400">checklist</span>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Checks Funcionais por Endpoint</h3>
+            </div>
+            <span class="text-xs text-gray-400 font-mono">${k6.checks.length} Validações Ativas</span>
+          </div>
+          <div class="flex flex-col gap-2.5">
+            ${k6.checks.map(c => `
+              <div class="p-3 rounded-lg bg-[#111216] border border-[#23252b] flex items-center justify-between gap-3 text-xs">
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="px-1.5 py-0.2 rounded text-[10px] bg-[#1e2025] text-gray-300 border border-[#2d3038] font-medium shrink-0">${escapeHtml(c.group)}</span>
+                    <span class="font-medium text-white truncate" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
+                  </div>
+                  <span class="text-[10px] text-gray-500 mt-0.5">${c.passes.toLocaleString()} ok • ${c.fails} falhas</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="font-mono text-xs font-bold ${c.ok ? 'text-emerald-400' : 'text-red-400'}">${c.rate}%</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${c.ok ? 'bg-emerald-950/70 border border-emerald-800/60 text-emerald-300' : 'bg-red-950/70 border border-red-800/60 text-red-300'}">
+                    ${c.ok ? 'OK' : 'ALERTA'}
+                  </span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#23252b] text-[11px] text-gray-400 flex items-center justify-between">
+          <span>Integridade de Payloads e Status Codes das APIs</span>
+          <span class="text-blue-400 font-semibold">Monitoramento Contínuo</span>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+// Funções de Interação e Seleção de Coluna k6
+function selectK6Column(colType) {
+  window.universalQaState.k6SelectedCol = colType;
+  document.querySelectorAll('.k6-telemetry-col').forEach(col => {
+    col.classList.remove('k6-col-selected');
+  });
+  const target = document.getElementById(`k6-col-${colType}`);
+  if (target) {
+    target.classList.add('k6-col-selected');
+    const names = { vus: 'Concorrência & VUs', latency: 'Latência & Percentis', errors: 'Confiabilidade HTTP', network: 'Rede & Tráfego' };
+    showToast(`Coluna Selecionada: ${names[colType] || colType}`);
+  }
+}
+
+function switchK6Scenario(scenarioKey) {
+  const current = window.universalQaState.k6Data || DEFAULT_K6_DATA;
+  if (!current.scenarios || !current.scenarios[scenarioKey]) return;
+  const s = current.scenarios[scenarioKey];
+  current.vusMax = s.vus;
+  current.rps = s.rps;
+  current.latency.p95 = s.p95;
+  current.errorRatePct = s.errorRate;
+  current.httpReqsCount = s.total;
+  current.passedReqs = Math.round(s.total * (1 - parseFloat(s.errorRate)/100));
+  current.failedReqs = s.total - current.passedReqs;
+  current.slaPassed = parseFloat(s.errorRate) <= 1.0;
+
+  if (scenarioKey === 'stress') {
+    current.testType = 'Teste de Estresse Máximo (Stress Test)';
+  } else if (scenarioKey === 'smoke') {
+    current.testType = 'Smoke Test Rápido (Smoke Test)';
+  } else {
+    current.testType = 'Teste de Carga & Estresse (Load Test)';
+  }
+
+  renderK6Dashboard(current);
+  showToast(`Cenário k6 carregado: ${scenarioKey.toUpperCase()} (${s.vus} VUs)`);
+}
+
+function exportK6SummaryJson() {
+  const data = window.universalQaState.k6Data || DEFAULT_K6_DATA;
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `k6-summary-report-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Relatório k6 exportado em JSON!');
+}
+

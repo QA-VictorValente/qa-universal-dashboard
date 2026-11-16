@@ -50,7 +50,7 @@ const isDemo = hasFlag(['--demo']);
 
 console.log('\x1b[36m%s\x1b[0m', '════════════════════════════════════════════════════════════════');
 console.log('\x1b[36m%s\x1b[0m', '           UNIVERSAL QA TEST DASHBOARD (v1.0.0)                 ');
-console.log('\x1b[36m%s\x1b[0m', '  Playwright • Cypress • Robot Framework • Selenium • Pytest   ');
+console.log('\x1b[36m%s\x1b[0m', '  Playwright • Cypress • Robot • Selenium • Pytest • k6 Perf   ');
 console.log('\x1b[36m%s\x1b[0m', '════════════════════════════════════════════════════════════════\n');
 
 // 0. EXECUÇÃO DE COMANDO DE TESTES (SE ESPECIFICADO VIA --run)
@@ -87,6 +87,8 @@ function autoDiscoverResults() {
     'playwright-report/results.json',
     'test-results/results.json',
     'test-results',
+    'k6-summary.json',
+    'summary.json',
     'output.xml',
     'results/output.xml',
     'report.xml',
@@ -232,6 +234,7 @@ function generateStaticBundle(sourcePath, outPath, customFramework = null) {
   const robotJs = fs.readFileSync(path.join(srcDir, 'parsers', 'robot-parser.js'), 'utf-8');
   const pwJs = fs.readFileSync(path.join(srcDir, 'parsers', 'playwright-parser.js'), 'utf-8');
   const cyJs = fs.readFileSync(path.join(srcDir, 'parsers', 'cypress-parser.js'), 'utf-8');
+  const k6Js = fs.readFileSync(path.join(srcDir, 'parsers', 'k6-parser.js'), 'utf-8');
   const univJs = fs.readFileSync(path.join(srcDir, 'parsers', 'universal-parser.js'), 'utf-8');
 
   let reportData = null;
@@ -261,6 +264,7 @@ function generateStaticBundle(sourcePath, outPath, customFramework = null) {
       ${robotJs}
       ${pwJs}
       ${cyJs}
+      ${k6Js}
       ${univJs}
       ${shaderJs}
       ${appJs}
@@ -331,7 +335,10 @@ Exemplos Práticos:
   4. Rodar com Robot Framework:
      npx qa-universal-dashboard --build --results output.xml --framework "Robot Framework Python" --open
 
-  5. Servidor local interativo:
+  5. Executar teste de carga com k6 e abrir relatório de performance & SLAs:
+     npx qa-universal-dashboard --run "k6 run --summary-export=summary.json script.js" --results summary.json --framework "k6 Performance" --open
+
+  6. Servidor local interativo:
      npx qa-universal-dashboard --results ./test-results --port 3333 --open
 `);
 }

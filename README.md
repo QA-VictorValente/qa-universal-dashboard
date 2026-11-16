@@ -9,6 +9,7 @@
 ![Robot Framework](https://img.shields.io/badge/Robot%20Framework-Python-00c0b5.svg?logo=robotframework)
 ![Selenium](https://img.shields.io/badge/Selenium-Java%20%7C%20Python%20%7C%20C%23-43B02A.svg?logo=selenium)
 ![Pytest](https://img.shields.io/badge/Pytest-Python-0A9EDC.svg?logo=pytest)
+![k6](https://img.shields.io/badge/k6-Load%20%26%20Stress-7D64FF.svg?logo=k6)
 ![WebGL](https://img.shields.io/badge/WebGL-Tactical%20Radar-purple.svg)
 
 **O Dashboard Executivo Definitivo de QA, Telemetria e Observabilidade Multi-Framework.**  
@@ -29,6 +30,7 @@
    - [No Robot Framework](#-configuração-no-robot-framework-python)
    - [No Pytest](#-configuração-no-pytest-python)
    - [No Selenium (Java / Maven)](#-configuração-no-selenium-java--maven)
+   - [No k6 (Grafana k6 - Carga & Performance)](#-configuração-no-k6-grafana-k6---carga--performance)
 4. [O Comando Mágico: Execução Automática com Auto-Open e Framework Marcado](#4-o-comando-mágico-execução-automática-com-auto-open-e-framework-marcado)
 5. [Explicação Completa das Abas do Dashboard](#5-explicação-completa-das-abas-do-dashboard)
    - [Aba 1: Visão Geral](#aba-1-visão-geral)
@@ -37,6 +39,7 @@
    - [Aba 4: Evidências & Player WebM](#aba-4-evidências--player-webm)
    - [Aba 5: Gráficos & Distribuição](#aba-5-gráficos--distribuição)
    - [Aba 6: Tendências & Matriz de Risco](#aba-6-tendências--matriz-de-risco)
+   - [Aba 7: K6 Tests (Performance, Carga & SLAs)](#aba-7-k6-tests-performance-carga--slas)
 6. [Alternância de Temas (Tema Claro e Tema Escuro)](#6-alternância-de-temas-tema-claro-e-tema-escuro)
 7. [Os 3 Modos de Uso da Ferramenta](#7-os-3-modos-de-uso-da-ferramenta)
 8. [Deploy Automático no GitHub Pages](#8-deploy-automático-no-github-pages)
@@ -77,6 +80,7 @@ Qualquer ferramenta que gere relatório em formato **JSON** ou **XML (JUnit/xUni
 | :--- | :--- | :--- | :---: |
 | **Cypress** | JavaScript, TypeScript | Mochawesome JSON, JUnit XML | ✅ Sim |
 | **Playwright** | C# (.NET), TypeScript, JavaScript, Python | JSON nativo, JUnit XML | ✅ Sim |
+| **k6 (Grafana)** | JavaScript, TypeScript | JSON (`--summary-export=summary.json`) | ✅ Sim |
 | **Robot Framework** | Python | `output.xml` nativo do Robot | ✅ Sim |
 | **Selenium WebDriver** | Java, Python, C#, JavaScript | TestNG XML, Surefire XML, JUnit XML | ✅ Sim |
 | **Pytest** | Python | `--junitxml` XML padrão | ✅ Sim |
@@ -201,6 +205,23 @@ npx qa-universal-dashboard --run "mvn test" --results target/surefire-reports --
 
 ---
 
+### ⚡ Configuração no k6 (Grafana k6 - Carga & Performance)
+
+O k6 permite exportar o resumo completo da execução em formato JSON através da flag nativa `--summary-export`:
+
+1. **Execute seu script de teste de carga exportando o sumário:**
+   ```bash
+   k6 run --summary-export=summary.json teste-carga.js
+   ```
+
+2. **Gere o dashboard e abra imediatamente no navegador:**
+   ```bash
+   npx qa-universal-dashboard --run "k6 run --summary-export=summary.json teste-carga.js" --results summary.json --framework "k6 Performance" --open
+   ```
+   *O dashboard detecta automaticamente as métricas do k6 e direciona você para a aba dedicada com percentis `p90`, `p95`, `p99`, VUs e taxas de erro!*
+
+---
+
 ## 4. O Comando Mágico: Execução Automática com Auto-Open e Framework Marcado
 
 Você pode usar o utilitário de linha de comando (`cli.js`) passando o comando de teste, a linguagem desejada e pedindo para abrir na hora:
@@ -237,12 +258,12 @@ npx qa-universal-dashboard --run "npx cypress run" --framework "Cypress JS" --op
 
 ## 5. Explicação Completa das Abas do Dashboard
 
-O dashboard foi projetado como uma **Central de Observabilidade de QA Executiva**. Abaixo está o detalhamento de cada uma das suas 6 abas principais:
+O dashboard foi projetado como uma **Central de Observabilidade de QA Executiva**. Abaixo está o detalhamento de cada uma das suas 7 abas principais:
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ [VISÃO GERAL] [EXECUÇÕES] [TESTES COM FALHA & IA] [EVIDÊNCIAS] [GRÁFICOS] [TENDÊNCIAS]  │
-└────────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ [VISÃO GERAL] [EXECUÇÕES] [TESTES COM FALHA & IA] [EVIDÊNCIAS] [GRÁFICOS] [TENDÊNCIAS] [K6 TESTS]   │
+└────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -331,6 +352,23 @@ O dashboard foi projetado como uma **Central de Observabilidade de QA Executiva*
 
 ---
 
+### Aba 7: K6 Tests (Performance, Carga & SLAs)
+* **Objetivo:** Telemetria executiva e observabilidade avançada para testes de Performance, Estresse, Carga (Load) e Smoke com k6.
+* **Componentes Principais:**
+  - **Grid Interativo de Telemetria com Efeito Foco:**
+    - As 4 colunas principais (`VUs e Concorrência`, `Latência & Percentis`, `Confiabilidade HTTP` e `Rede & Tráfego`) possuem animação inteligente ao passar o mouse, destacando a coluna ativa e atenuando as demais com visual futurista.
+    - **Ênfase na Métrica Mais Importante:** A coluna de **Latência & Percentis (`p95`, `p99`, `p90`, Mediana e Média)** já vem destacada e pré-selecionada por padrão como Métrica Chave, com opção de clicar sobre qualquer outra coluna para fixar o foco.
+  - **Seletor Rápido de Cenários k6:**
+    - Alterne instantaneamente entre **Carga (100 VUs)**, **Estresse Máximo (300 VUs)** e **Smoke Test (10 VUs)** para analisar o comportamento dos percentis de latência sob diferentes volumes de tráfego.
+  - **Painel de Auditoria de Thresholds (SLAs):**
+    - Validação automática de 100% dos critérios corporativos estipulados no script (ex: `http_req_duration: ['p(95)<500']`, `http_req_failed: ['rate<0.01']`), indicando status de conformidade ou violação de SLA.
+  - **Checks Funcionais por Endpoint:**
+    - Tabela com taxa de aprovação, contagem de requisições e validação de payloads/códigos de resposta (ex: `200 OK`, `Pix Payload Valid`).
+  - **Exportação em 1 Clique:**
+    - Botão **"Exportar JSON"** para baixar o relatório sumarizado de performance e anexar em pipelines de CI/CD ou auditorias de confiabilidade de release.
+
+---
+
 ## 6. Alternância de Temas (Tema Claro e Tema Escuro)
 
 O dashboard possui um botão no canto superior direito para alternar entre os temas instantaneamente:
@@ -393,6 +431,9 @@ Este repositório já inclui um fluxo de integração contínua pré-configurado
 
 **P: Posso usar em testes de API e testes de UI ao mesmo tempo?**  
 *R: Sim! O dashboard suporta testes de UI (Playwright, Cypress, Selenium) e testes de API (RestSharp, Axios, Supertest, Pytest Requests), organizando tudo na mesma interface.*
+
+**P: Como o dashboard interpreta os dados do k6?**  
+*R: O dashboard detecta automaticamente o esquema do k6 (`metrics`, `root_group`, `vus`, `http_req_duration`) em qualquer arquivo exportado com `--summary-export`. Ao carregar, ele redireciona você diretamente para a aba dedicada de k6 com todos os gráficos de percentis, SLAs e telemetria de rede prontos.*
 
 ---
 

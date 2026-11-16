@@ -9,24 +9,31 @@
     const RobotParser = require('./robot-parser');
     const PlaywrightParser = require('./playwright-parser');
     const CypressParser = require('./cypress-parser');
-    module.exports = factory(JUnitParser, RobotParser, PlaywrightParser, CypressParser);
+    const K6Parser = require('./k6-parser');
+    module.exports = factory(JUnitParser, RobotParser, PlaywrightParser, CypressParser, K6Parser);
   } else {
     root.UniversalParser = factory(
       root.JUnitParser,
       root.RobotParser,
       root.PlaywrightParser,
-      root.CypressParser
+      root.CypressParser,
+      root.K6Parser
     );
   }
-})(typeof self !== 'undefined' ? self : this, function (JUnitParser, RobotParser, PlaywrightParser, CypressParser) {
+})(typeof self !== 'undefined' ? self : this, function (JUnitParser, RobotParser, PlaywrightParser, CypressParser, K6Parser) {
 
   function detectAndParse(content, fileName = 'report') {
     const trimmed = content.trim();
 
-    // 1. JSON (Playwright ou Cypress Mochawesome)
+    // 1. JSON (k6, Playwright ou Cypress Mochawesome)
     if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
       try {
         const json = JSON.parse(trimmed);
+
+        // Verifica se é k6 Performance Summary
+        if (json.metrics && (json.root_group || json.metrics.http_req_duration || json.metrics.vus)) {
+          return K6Parser.parse(json, fileName);
+        }
         
         // Verifica se é Mochawesome (Cypress)
         if (json.results || (json.stats && json.stats.suites !== undefined)) {
