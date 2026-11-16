@@ -22,8 +22,11 @@
 ## 📑 Sumário
 
 1. [O que é o Universal QA Dashboard e Como Funciona?](#1-o-que-é-o-universal-qa-dashboard-e-como-funciona)
-2. [Quais Ferramentas e Linguagens Podem ser Incluídas?](#2-quais-ferramentas-e-linguagens-podem-ser-incluídas)
-3. [Como Configurar no seu Projeto (Passo a Passo)](#3-como-configurar-no-seu-projeto-passo-a-passo)
+2. [As Duas Formas de Funcionamento](#2-as-duas-formas-de-funcionamento)
+   - [Forma 1: Servidor Local em Porta + Inserção do Arquivo de Teste (Drag & Drop)](#-forma-1-servidor-local-em-porta--inserção-do-arquivo-de-teste-drag--drop)
+   - [Forma 2: Execução com Comando Único gerando HTML Standalone e Auto-Open](#-forma-2-execução-com-comando-único-gerando-html-standalone-e-auto-open)
+3. [Quais Ferramentas e Linguagens Podem ser Incluídas?](#3-quais-ferramentas-e-linguagens-podem-ser-incluídas)
+4. [Como Configurar no seu Projeto (Passo a Passo)](#4-como-configurar-no-seu-projeto-passo-a-passo)
    - [No Cypress](#-configuração-no-cypress-js--ts)
    - [No Playwright C# (.NET)](#-configuração-no-playwright-c-net-8)
    - [No Playwright TypeScript / JavaScript](#-configuração-no-playwright-typescript--javascript)
@@ -31,8 +34,8 @@
    - [No Pytest](#-configuração-no-pytest-python)
    - [No Selenium (Java / Maven)](#-configuração-no-selenium-java--maven)
    - [No k6 (Grafana k6 - Carga & Performance)](#-configuração-no-k6-grafana-k6---carga--performance)
-4. [O Comando Mágico: Execução Automática com Auto-Open e Framework Marcado](#4-o-comando-mágico-execução-automática-com-auto-open-e-framework-marcado)
-5. [Explicação Completa das Abas do Dashboard](#5-explicação-completa-das-abas-do-dashboard)
+5. [O Comando Mágico: Execução Automática com Auto-Open e Framework Marcado](#5-o-comando-mágico-execução-automática-com-auto-open-e-framework-marcado)
+6. [Explicação Completa das Abas do Dashboard](#6-explicação-completa-das-abas-do-dashboard)
    - [Aba 1: Visão Geral](#aba-1-visão-geral)
    - [Aba 2: Execuções e Resultados](#aba-2-execuções-e-resultados)
    - [Aba 3: Testes com Falha & IA](#aba-3-testes-com-falha--ia-triagem-heurística)
@@ -40,8 +43,7 @@
    - [Aba 5: Gráficos & Distribuição](#aba-5-gráficos--distribuição)
    - [Aba 6: Tendências & Matriz de Risco](#aba-6-tendências--matriz-de-risco)
    - [Aba 7: K6 Tests (Performance, Carga & SLAs)](#aba-7-k6-tests-performance-carga--slas)
-6. [Alternância de Temas (Tema Claro e Tema Escuro)](#6-alternância-de-temas-tema-claro-e-tema-escuro)
-7. [Os 3 Modos de Uso da Ferramenta](#7-os-3-modos-de-uso-da-ferramenta)
+7. [Alternância de Temas (Tema Claro e Tema Escuro)](#7-alternância-de-temas-tema-claro-e-tema-escuro)
 8. [Deploy Automático no GitHub Pages](#8-deploy-automático-no-github-pages)
 9. [Perguntas Frequentes (FAQ)](#9-perguntas-frequentes-faq)
 
@@ -54,7 +56,7 @@ O **Universal QA Dashboard** foi criado para substituir relatórios legados e bu
 ### Como ele funciona por baixo dos panos?
 1. **Zero Dependências:** Funciona usando **apenas o Node.js nativo** (versão 18 ou superior). Você não precisa instalar bibliotecas externas pesadas.
 2. **Motor de Autodetecção Heurística (`universal-parser.js`):** Você não precisa converter arquivos manualmente. O motor lê nativamente:
-   - Relatórios em **JSON** (Playwright JSON, Cypress Mochawesome JSON).
+   - Relatórios em **JSON** (Playwright JSON, Cypress Mochawesome JSON, k6 Summary JSON).
    - Relatórios em **XML** (JUnit XML, xUnit XML, TestNG XML, Robot Framework `output.xml`, Pytest XML).
 3. **Geração em Tempo Real:** Ele agrega os testes, calcula taxas de aprovação por módulo/pasta, classifica níveis de risco corporativo, detecta causa de falhas por inteligência heurística e monta uma interface interativa em SPA (Single Page Application).
 
@@ -72,7 +74,103 @@ O **Universal QA Dashboard** foi criado para substituir relatórios legados e bu
 
 ---
 
-## 2. Quais Ferramentas e Linguagens Podem ser Incluídas?
+## 2. As Duas Formas de Funcionamento
+
+O **Universal QA Dashboard** foi projetado para operar com máxima flexibilidade através de **duas formas fundamentais de uso**:
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                          AS 2 FORMAS DE FUNCIONAMENTO                                                  │
+├───────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────┤
+│ FORMA 1: Servidor Local em Porta + Inserção de Arquivo    │ FORMA 2: Comando Único (Roda Teste, Gera HTML & Abre)     │
+├───────────────────────────────────────────────────────────┼───────────────────────────────────────────────────────────┤
+│ • Sobe o dashboard em uma porta local (ex: :3000)         │ • Roda seus testes com um comando único no terminal       │
+│ • Roda o teste local e gera o arquivo (.json ou .xml)     │ • Compila na hora um arquivo HTML estático (standalone)   │
+│ • Arraste ou carregue o arquivo para dentro da tela       │ • Abre automaticamente no navegador com a tag marcada    │
+│ • Ideal para exploração manual e múltiplos relatórios     │ • Ideal para scripts no package.json e pipelines de CI/CD │
+└───────────────────────────────────────────────────────────┴───────────────────────────────────────────────────────────┘
+```
+
+### 🔹 Forma 1: Servidor Local em Porta + Inserção do Arquivo de Teste (Drag & Drop)
+
+Nesta modalidade, você inicializa o servidor local do dashboard em uma porta HTTP de sua preferência. O dashboard fica aberto e pronto no navegador, e você alimenta ele arrastando ou selecionando os relatórios gerados pelos seus testes locais.
+
+#### 1. Inicie o dashboard localmente:
+```bash
+# Iniciar na porta padrão 3000 e já abrir no navegador:
+npx qa-universal-dashboard --port 3000 --open
+
+# Ou caso tenha o repositório clonado localmente:
+npm start
+```
+O navegador abrirá automaticamente em `http://localhost:3000`.
+
+#### 2. Execute seu teste automatizado na sua máquina:
+Rode a suíte de testes do seu projeto em qualquer terminal ou IDE:
+- **Cypress:** `npx cypress run` (gera `cypress/reports/mochawesome.json`)
+- **Playwright:** `npx playwright test` (gera `test-results/results.json`)
+- **k6:** `k6 run --summary-export=summary.json script.js` (gera `summary.json`)
+- **Robot Framework:** `robot --outputdir results tests/` (gera `results/output.xml`)
+- **Pytest:** `pytest --junitxml=report.xml` (gera `report.xml`)
+
+#### 3. Coloque o arquivo no dashboard:
+- Arraste o arquivo `.json` ou `.xml` gerado diretamente para a janela do dashboard no navegador.
+- Ou clique no botão **"Carregar Arquivo"** na barra superior e selecione o relatório.
+- **Resultado Instantâneo:** O motor universal autodetecta o framework, calcula os KPIs, gera a matriz de risco, tria as falhas por heurística e exibe os gráficos no mesmo instante!
+
+---
+
+### 🔹 Forma 2: Execução com Comando Único gerando HTML Standalone e Auto-Open
+
+Nesta modalidade, você não precisa deixar nenhum servidor local rodando nem arrastar arquivos manualmente. Com apenas **um comando no terminal**, o runner executa seus testes, compila um arquivo HTML estático independente e já abre direto na tela da pessoa com a linguagem marcada!
+
+#### Como funciona:
+O parâmetro `--run "<comando>"` executa seus testes, o `--build` compila um arquivo HTML estático único (com CSS, JS e todos os dados embutidos, pesando ~300KB) e o `--open` abre imediatamente no navegador padrão.
+
+#### Exemplos Práticos:
+
+1. **No Cypress (JavaScript / TypeScript):**
+   ```bash
+   npx qa-universal-dashboard --run "npx cypress run" --build --framework "Cypress JS" --open
+   ```
+
+2. **No Playwright (.NET C#, TypeScript ou Python):**
+   ```bash
+   npx qa-universal-dashboard --run "npx playwright test" --build --results test-results/results.json --framework "Playwright TS" --open
+   ```
+
+3. **No k6 (Testes de Carga & Performance):**
+   ```bash
+   npx qa-universal-dashboard --run "k6 run --summary-export=summary.json script.js" --build --results summary.json --framework "k6 Performance" --open
+   ```
+
+4. **No Robot Framework (Python):**
+   ```bash
+   npx qa-universal-dashboard --run "robot --outputdir results tests/" --build --results results/output.xml --framework "Robot Framework" --open
+   ```
+
+5. **No Selenium (Java / Maven):**
+   ```bash
+   npx qa-universal-dashboard --run "mvn test" --build --results target/surefire-reports --framework "Selenium Java" --open
+   ```
+
+#### 💡 Como configurar no `package.json` do seu time:
+Coloque o comando nos scripts do seu projeto. Assim, qualquer pessoa ou desenvolvedor precisa apenas rodar `npm run test:report`:
+```json
+{
+  "scripts": {
+    "test": "cypress run",
+    "test:report": "npx qa-universal-dashboard --run \"npx cypress run\" --build --framework \"Cypress JS\" --open"
+  }
+}
+```
+
+> **Vantagem do arquivo HTML estático (`dist/index.html`):**  
+> Como é um arquivo 100% autocontido (zero dependências e sem necessidade de servidor Node.js aberto), você pode enviá-lo por Teams/Slack, anexar como evidência de homologação em tarefas do Jira ou publicar em qualquer servidor de arquivos estáticos.
+
+---
+
+## 3. Quais Ferramentas e Linguagens Podem ser Incluídas?
 
 Qualquer ferramenta que gere relatório em formato **JSON** ou **XML (JUnit/xUnit)** é suportada nativamente:
 
@@ -89,7 +187,7 @@ Qualquer ferramenta que gere relatório em formato **JSON** ou **XML (JUnit/xUni
 
 ---
 
-## 3. Como Configurar no seu Projeto (Passo a Passo)
+## 4. Como Configurar no seu Projeto (Passo a Passo)
 
 ### 🌲 Configuração no Cypress (JS / TS)
 
@@ -222,7 +320,7 @@ O k6 permite exportar o resumo completo da execução em formato JSON através d
 
 ---
 
-## 4. O Comando Mágico: Execução Automática com Auto-Open e Framework Marcado
+## 5. O Comando Mágico: Execução Automática com Auto-Open e Framework Marcado
 
 Você pode usar o utilitário de linha de comando (`cli.js`) passando o comando de teste, a linguagem desejada e pedindo para abrir na hora:
 
@@ -256,7 +354,7 @@ npx qa-universal-dashboard --run "npx cypress run" --framework "Cypress JS" --op
 
 ---
 
-## 5. Explicação Completa das Abas do Dashboard
+## 6. Explicação Completa das Abas do Dashboard
 
 O dashboard foi projetado como uma **Central de Observabilidade de QA Executiva**. Abaixo está o detalhamento de cada uma das suas 7 abas principais:
 
@@ -369,7 +467,7 @@ O dashboard foi projetado como uma **Central de Observabilidade de QA Executiva*
 
 ---
 
-## 6. Alternância de Temas (Tema Claro e Tema Escuro)
+## 7. Alternância de Temas (Tema Claro e Tema Escuro)
 
 O dashboard possui um botão no canto superior direito para alternar entre os temas instantaneamente:
 
@@ -379,31 +477,6 @@ O dashboard possui um botão no canto superior direito para alternar entre os te
 * **☀️ Tema Claro (Executive Light):**
   - Fundo claro refinado (`#f8fafc`), cards brancos com elevação suave, bordas nítidas e badges pastel (`#fee2e2` para falhas e `#dcfce7` para sucessos).
   - 100% em conformidade com critérios de contraste e acessibilidade (WCAG AAA), sem textos borrados ou manchas escuras.
-
----
-
-## 7. Os 3 Modos de Uso da Ferramenta
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                         MODOS DE UTILIZAÇÃO                            │
-├──────────────────┬──────────────────────┬──────────────────────────────┤
-│ 1. Standalone    │ 2. CLI Runner / Live │ 3. Drag & Drop               │
-│    (Zero Servidor│    (Desenvolvimento) │    (Navegador Puro)          │
-├──────────────────┼──────────────────────┼──────────────────────────────┤
-│ `npm run build`  │ `npx qa-dashboard`   │ Abra `index.html` no browser │
-│ Gera HTML único  │ Servidor local       │ e arraste qualquer `.json`   │
-│ de ~260KB.       │ com live-reload.     │ ou `.xml` para a janela!     │
-└──────────────────┴──────────────────────┴──────────────────────────────┘
-```
-
-1. **Modo Standalone (`--build`):**
-   - Gera um único arquivo HTML (`dist/index.html`) que contém todo o CSS, JS, gráficos e dados embutidos.
-   - Perfeito para anexar no Jira, enviar por e-mail ou subir como artefato no pipeline de CI/CD.
-2. **Modo CLI Runner (`--run` com `--open`):**
-   - Executa os testes e abre o dashboard automaticamente no navegador padrão da pessoa.
-3. **Modo Drag & Drop:**
-   - Se você já tem um arquivo de teste salvo no seu computador, basta abrir o `index.html` e arrastá-lo para dentro da janela. O dashboard processa e renderiza tudo no mesmo segundo!
 
 ---
 
